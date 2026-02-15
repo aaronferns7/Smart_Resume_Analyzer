@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>HR Dashboard | TalentCortex</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="stylesheet" href="../../css/common.css">
+  <link rel="stylesheet" href="../../css/hr.css">
+</head>
+<body>
+
+<!-- ===== NAVBAR ===== -->
+<nav class="hr-navbar">
+  <div class="nav-left">
+    <h2> TalentCortex</h2>
+    <span>HR Portal</span>
+  </div>
+
+  <div class="nav-right">
+    <span class="user-name">HR Manager</span>
+    <div class="avatar">HR</div>
+    <a href="../auth/login.html" class="logout">Logout</a>
+  </div>
+</nav>
+
+<!-- ===== MAIN ===== -->
+<main class="container">
+
+  <header class="page-header">
+    <h1>HR Dashboard</h1>
+    <p>Upload job description and review candidate performance</p>
+  </header>
+
+  <!-- Stats -->
+  <section class="stats">
+    <div class="stat-card">
+      <h3>5</h3>
+      <p>Active Jobs</p>
+    </div>
+    <div class="stat-card">
+      <h3>132</h3>
+      <p>Resumes Uploaded</p>
+    </div>
+    <div class="stat-card">
+      <h3>87%</h3>
+      <p>Average Match Score</p>
+    </div>
+  </section>
+
+  <!-- Upload JD -->
+  <section class="actions">
+
+    <div class="action-card">
+      <h3>Paste Job Description</h3>
+      <textarea placeholder="Paste job description here..."></textarea>
+      <button>Analyze Job</button>
+    </div>
+
+    <div class="action-card">
+      <h3>Upload Job Description File</h3>
+      <input type="file" accept=".pdf,.doc,.docx">
+      <button>Upload JD</button>
+    </div>
+
+  </section>
+
+  <!-- RESULT BUTTON -->
+  <div class="center-btn">
+    <a href="results.html" class="primary-btn">
+      View Candidate Analysis
+    </a>
+  </div>
+
+</main>
+
+<script src="../../js/hr.js"></script>
+</body>
+</html>

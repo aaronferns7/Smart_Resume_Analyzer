@@ -1,0 +1,126 @@
+/* ================= HERO ================= */
+.hero {
+  background: linear-gradient(135deg, #0b2540, #0e3a5d);
+  color: white;
+  padding: 110px 60px;
+  text-align: center;
+}
+
+.hero h1 {
+  font-size: 52px;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.hero p {
+  margin-top: 20px;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+  opacity: 0.9;
+}
+
+.hero-actions {
+  margin-top: 35px;
+}
+
+/* ================= WHY ================= */
+.why {
+  padding: 90px 60px;
+  text-align: center;
+}
+
+.why h2 {
+  font-size: 36px;
+}
+
+.section-subtitle {
+  margin-top: 12px;
+  color: #64748b;
+}
+
+.why-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px;
+  margin-top: 50px;
+}
+
+.card {
+  background: white;
+  padding: 35px;
+  border-radius: 18px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+}
+
+/* ================= HOW ================= */
+.how {
+  background: #f8fafc;
+  padding: 90px 60px;
+  text-align: center;
+}
+
+.how h2 {
+  font-size: 36px;
+}
+
+.how-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 40px;
+  margin-top: 50px;
+}
+
+.how-card {
+  background: white;
+  padding: 35px;
+  border-radius: 18px;
+  text-align: left;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+}
+
+.how-card h3 {
+  margin-bottom: 15px;
+}
+
+.how-card ul {
+  padding-left: 20px;
+}
+
+.how-card li {
+  margin-bottom: 10px;
+}
+
+/* ================= CTA ================= */
+.cta {
+  background: #0b2540;
+  color: white;
+  padding: 90px 60px;
+  text-align: center;
+}
+
+.cta h2 {
+  font-size: 38px;
+}
+
+.cta p {
+  margin-top: 15px;
+  opacity: 0.9;
+}
+
+.cta-actions {
+  margin-top: 30px;
+}
+
+/* ================= FOOTER ================= */
+.footer {
+  background: #081b30;
+  color: white;
+  padding: 50px;
+  text-align: center;
+}
+
+.footer-note {
+  margin-top: 10px;
+  opacity: 0.7;
+}
