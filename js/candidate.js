@@ -156,3 +156,46 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
 });
+
+  // ===============================
+  // CANDIDATE PREFERENCES HANDLING
+  // ===============================
+
+  const savePreferencesBtn = document.getElementById("savePreferencesBtn");
+  const preferenceForm = document.getElementById("preferenceForm");
+
+  if (savePreferencesBtn && preferenceForm) {
+
+    // Load previously saved preferences (if any)
+    const savedPreferences = localStorage.getItem("candidatePreferences");
+
+    if (savedPreferences) {
+      const parsedPrefs = JSON.parse(savedPreferences);
+
+      Object.keys(parsedPrefs).forEach(key => {
+        const field = preferenceForm.querySelector(`[name="${key}"]`);
+        if (field) field.value = parsedPrefs[key];
+      });
+    }
+
+    // Save Preferences
+    savePreferencesBtn.addEventListener("click", () => {
+
+      const formData = new FormData(preferenceForm);
+
+      const preferences = {
+        workMode: formData.get("workMode"),
+        nightShift: formData.get("nightShift"),
+        relocate: formData.get("relocate"),
+        workingHours: formData.get("workingHours"),
+        workLifeBalance: formData.get("workLifeBalance"),
+        savedAt: new Date().toISOString()
+      };
+
+      console.log("Saved Preferences:", preferences);
+
+      localStorage.setItem("candidatePreferences", JSON.stringify(preferences));
+
+      alert("Preferences saved successfully!");
+    });
+  }

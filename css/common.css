@@ -5,19 +5,38 @@
   font-family: Inter, Arial, sans-serif;
 }
 
+/* Smooth scrolling for in-page anchors */
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   background: #f4f7fb;
   color: #0f172a;
+  /* leave space for fixed navbar */
+  padding-top: 72px;
 }
 
-/* Navbar */
+/* Navbar (fixed top) */
 .navbar {
   background: #0b2540;
   color: white;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 999;
+  padding: 8px 0; /* inner container controls spacing */
+}
+
+.nav-inner {
+  max-width: 1100px;
+  margin: 0 auto;
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 18px 50px;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 10px 20px;
 }
 
 .logo {
@@ -29,14 +48,35 @@ body {
   list-style: none;
   display: flex;
   gap: 25px;
+  flex: 1 1 auto;
+  justify-content: center;
+  align-items: center;
+  white-space: nowrap;
 }
 
 .nav-links li {
-  opacity: 0.8;
+  opacity: 0.95;
 }
 
-.nav-links .active {
+.nav-links a {
+  color: white;
+  text-decoration: none;
+  opacity: 0.95;
+  font-weight: 600;
+  padding: 6px 8px;
+  border-radius: 6px;
+}
+
+.nav-links a.active {
   color: #3b82f6;
+  background: rgba(59,130,246,0.08);
+}
+
+.auth-buttons {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex: 0 0 auto;
 }
 
 .btn {
@@ -62,3 +102,16 @@ body {
   border: 1px solid white;
   color: white;
 }
+
+/* Dashboard button used in navbars */
+.dashboard-btn {
+  display: inline-block;
+  background: #3b82f6;
+  color: white;
+  padding: 8px 14px;
+  border-radius: 10px;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.dashboard-btn:hover { opacity: 0.95; }

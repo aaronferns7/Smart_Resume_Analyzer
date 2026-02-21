@@ -13,17 +13,24 @@
 
 <!-- ================= NAVBAR ================= -->
 <nav class="navbar">
-  <div class="logo"> TalentCortex</div>
-  <ul class="nav-links">
-    <li class="active">Home</li>
-    <li>About</li>
-    <li>Contact</li>
-  </ul>
-  <a href="pages/auth/login.html" class="btn">Login</a>
+  <div class="nav-inner">
+    <div class="logo">TalentCortex</div>
+
+    <ul class="nav-links">
+      <li><a href="#home" class="active">Home</a></li>
+      <li><a href="#about">About</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+
+    <div class="auth-buttons">
+      <a href="pages/auth/candidate-login.html" class="btn">Candidate Login</a>
+      <a href="pages/auth/hr-login.html" class="btn outline">HR Login</a>
+    </div>
+  </div>
 </nav>
 
 <!-- ================= HERO ================= -->
-<section class="hero">
+<section id="home" class="hero">
   <h1>
     AI-Powered Resume Skill Extraction <br>
     & Intelligent Candidate Ranking
@@ -35,13 +42,13 @@
   </p>
 
   <div class="hero-actions">
-    <a href="pages/hr/dashboard.html" class="btn primary">For HR</a>
-    <a href="pages/candidate/dashboard.html" class="btn outline">For Candidates</a>
+    <a href="pages/auth/hr-login.html" class="btn primary">For HR</a>
+    <a href="pages/auth/candidate-login.html" class="btn outline">For Candidates</a>
   </div>
 </section>
 
 <!-- ================= WHY CHOOSE ================= -->
-<section class="why">
+<section id="about" class="why">
   <h2>Why Choose TalentCortex?</h2>
   <p class="section-subtitle">
     Our system automates resume analysis while ensuring fairness,
@@ -120,12 +127,23 @@
   </p>
 
   <div class="cta-actions">
-    <a href="pages/auth/login.html" class="btn primary">Get Started</a>
-    <a href="pages/auth/login.html" class="btn outline">Login</a>
+    <a href="pages/auth/candidate-login.html" class="btn primary">Candidate Login</a>
+    <a href="pages/auth/hr-login.html" class="btn outline">HR Login</a>
   </div>
 </section>
 
 <!-- ================= FOOTER ================= -->
+<!-- ================= CONTACT ================= -->
+<section id="contact" class="why">
+  <h2>Contact</h2>
+  <p class="section-subtitle">Reach out for demos, integrations, or partnership inquiries.</p>
+
+  <div style="margin-top:24px; text-align:center;">
+    <p>Email: talentcortex@gmail.com</p>
+    <p>Phone: 9876543210</p>
+  </div>
+</section>
+
 <footer class="footer">
   <div class="footer-content">
     <h3>TalentCortex</h3>

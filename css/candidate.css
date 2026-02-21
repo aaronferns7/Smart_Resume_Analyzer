@@ -13,11 +13,23 @@ body {
 .candidate-navbar {
   background: #0b2540;
   color: white;
-  padding: 16px 32px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 999;
+  padding: 8px 0; /* inner container handles spacing */
+}
+
+/* center content and keep layout consistent */
+.candidate-navbar .nav-inner {
+  max-width: 1100px;
+  margin: 0 auto;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  flex-wrap: wrap;
+  padding: 10px 20px;
+  gap: 12px;
 }
 
 .nav-left span {
@@ -46,6 +58,38 @@ body {
   text-decoration: none;
 }
 
+/* Styled logout button for top-right nav */
+.logout-btn {
+  display: inline-block;
+  background: #60a5fa;
+  color: white;
+  padding: 8px 14px;
+  border-radius: 12px;
+  text-decoration: none;
+  font-weight: 700;
+  box-shadow: 0 6px 18px rgba(11,37,64,0.12);
+  transition: transform 0.12s ease, box-shadow 0.12s ease, opacity 0.12s ease;
+  border: 1px solid rgba(59,130,246,0.18);
+}
+
+.logout-btn:hover {
+  transform: translateY(-2px);
+  opacity: 0.95;
+  box-shadow: 0 10px 30px rgba(11,37,64,0.14);
+}
+
+@media (max-width: 640px) {
+  .logout-btn {
+    padding: 8px 10px;
+    font-size: 14px;
+  }
+}
+
+/* Ensure candidate pages reserve space so content isn't hidden under the fixed navbar */
+body.candidate-page {
+  padding-top: 72px;
+}
+
 /* ===== MAIN ===== */
 .container {
   padding: 30px;
@@ -72,10 +116,15 @@ body {
 
 /* ===== UPLOAD & ANALYSIS ===== */
 .upload-section {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 25px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
   margin-top: 30px;
+  /* stretch section to full viewport width while staying visually aligned */
+  width: calc(100% + 60px);
+  margin-left: -30px;
+  padding-left: 30px; /* keep inner spacing consistent */
+  padding-right: 30px;
 }
 
 .upload-card,
@@ -85,6 +134,9 @@ body {
   border-radius: 14px;
   box-shadow: 0 8px 20px rgba(0,0,0,0.05);
 }
+
+.upload-card { width: 100%; }
+.upload-card--wide { width: 100%; }
 
 input[type="file"] {
   margin: 15px 0;
@@ -97,20 +149,19 @@ input[type="file"] {
 
 .upload-controls {
   display: flex;
-  align-items: center;
-  gap: 16px;
-  justify-content: space-between;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 12px;
 }
 
 .upload-controls input[type="file"] {
-  flex: 1 1 auto;
-  max-width: 65%;
+  width: 100%;
   margin: 0;
 }
 
 .upload-controls .primary-btn {
-  flex: 0 0 auto;
-  padding: 10px 20px;
+  width: 100%;
+  padding: 12px 18px;
   border-radius: 10px;
   text-align: center;
 }
@@ -437,4 +488,45 @@ button {
   border-radius: 12px;
   text-align: center;
   color: #64748b;
+}
+
+/* ===== Upload + Preference Grid ===== */
+
+.upload-preference-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 25px;
+  margin-top: 30px;
+}
+
+.preference-card {
+  background: white;
+  padding: 22px;
+  border-radius: 14px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+}
+
+.form-group {
+  margin-top: 15px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 14px;
+  margin-bottom: 6px;
+  font-weight: 500;
+}
+
+.form-group select {
+  width: 100%;
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+  outline: none;
+}
+
+@media (max-width: 900px) {
+  .upload-preference-grid {
+    grid-template-columns: 1fr;
+  }
 }

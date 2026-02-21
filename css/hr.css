@@ -13,11 +13,23 @@ body {
 .hr-navbar {
   background: #0b2540;
   color: white;
-  padding: 16px 32px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 999;
+  padding: 8px 0;
+}
+
+/* inner container aligns navbar content similarly to site-wide nav */
+.hr-navbar .nav-inner {
+  max-width: 1100px;
+  margin: 0 auto;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  flex-wrap: wrap;
+  padding: 10px 20px;
+  gap: 12px;
 }
 
 .nav-left span {
@@ -44,6 +56,30 @@ body {
 .logout {
   color: #f87171;
   text-decoration: none;
+}
+
+/* Styled logout button for HR navbar (matches candidate) */
+.logout-btn {
+  display: inline-block;
+  background: #60a5fa;
+  color: white;
+  padding: 8px 14px;
+  border-radius: 12px;
+  text-decoration: none;
+  font-weight: 700;
+  box-shadow: 0 6px 18px rgba(11,37,64,0.12);
+  transition: transform 0.12s ease, box-shadow 0.12s ease, opacity 0.12s ease;
+  border: 1px solid rgba(59,130,246,0.18);
+}
+
+.logout-btn:hover {
+  transform: translateY(-2px);
+  opacity: 0.95;
+  box-shadow: 0 10px 30px rgba(11,37,64,0.14);
+}
+
+@media (max-width: 640px) {
+  .logout-btn { padding: 8px 10px; font-size: 14px; }
 }
 
 /* ===== MAIN ===== */
@@ -117,6 +153,9 @@ button {
 .table-wrapper {
   overflow-x: auto;
 }
+
+/* reserve top space when using fixed HR navbar */
+body.hr-page { padding-top: 72px; }
 
 table {
   width: 100%;
