@@ -1,78 +1,109 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>HR Dashboard | TalentCortex</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<title>HR Dashboard | TalentCortex</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <link rel="stylesheet" href="../../css/common.css">
-  <link rel="stylesheet" href="../../css/hr.css">
+<link rel="stylesheet" href="../../css/common.css">
+<link rel="stylesheet" href="../../css/hr.css">
+
 </head>
+
 <body class="hr-page">
 
-<!-- ===== NAVBAR ===== -->
+<!-- NAVBAR -->
 <nav class="hr-navbar">
-  <div class="nav-inner">
-    <div class="nav-left">
-      <h2>TalentCortex</h2>
-    </div>
+<div class="nav-inner">
 
-    <div class="nav-right">
-      <a href="../../index.html" class="logout-btn">Logout</a>
-    </div>
-  </div>
+<div class="nav-left">
+<h2>TalentCortex HR</h2>
+</div>
+
+<div class="nav-right">
+<a href="dashboard.html" class="logout-btn">Dashboard</a>
+<a href="../../index.html" class="logout-btn">Logout</a>
+</div>
+
+</div>
 </nav>
 
-<!-- ===== MAIN ===== -->
+
 <main class="container">
 
-  <header class="page-header">
-    <h1>HR Dashboard</h1>
-    <p>Upload job description and review candidate performance</p>
-  </header>
+<header class="page-header">
+<h1>HR Dashboard</h1>
+<p>Post new jobs and manage applications</p>
+</header>
 
-  <!-- Stats -->
-  <section class="stats">
-    <div class="stat-card">
-      <h3>5</h3>
-      <p>Active Jobs</p>
-    </div>
-    <div class="stat-card">
-      <h3>132</h3>
-      <p>Resumes Uploaded</p>
-    </div>
-    <div class="stat-card">
-      <h3>87%</h3>
-      <p>Average Match Score</p>
-    </div>
-  </section>
 
-  <!-- Upload JD -->
-  <section class="actions">
+<!-- POST JOB FORM -->
+<section class="card">
 
-    <div class="action-card">
-      <h3>Paste Job Description</h3>
-      <textarea placeholder="Paste job description here..."></textarea>
-      <button>Analyze Job</button>
-    </div>
+<h2>Post New Job</h2>
 
-    <div class="action-card">
-      <h3>Upload Job Description File</h3>
-      <input type="file" accept=".pdf,.doc,.docx">
-      <button>Upload JD</button>
-    </div>
+<form id="jobForm">
 
-  </section>
+<div class="form-group">
+<label>Job Title</label>
+<input type="text" id="jobTitle" required>
+</div>
 
-  <!-- RESULT BUTTON -->
-  <div class="center-btn">
-    <a href="results.html" class="primary-btn">
-      View Candidate Analysis
-    </a>
-  </div>
+<div class="form-group">
+<label>Company</label>
+<input type="text" id="company" required>
+</div>
+
+<div class="form-group">
+<label>Location</label>
+<input type="text" id="location" required>
+</div>
+
+<div class="form-group">
+<label>Work Mode</label>
+<select id="workMode">
+<option>Remote</option>
+<option>Hybrid</option>
+<option>Onsite</option>
+</select>
+</div>
+
+<div class="form-group">
+<label>Required Skills</label>
+<input type="text" id="skills" placeholder="React, Node, SQL">
+</div>
+
+<div class="form-group">
+<label>Job Description</label>
+<textarea id="description" rows="4"></textarea>
+</div>
+
+<button type="submit" class="primary-btn">
+Post Job
+</button>
+
+</form>
+
+</section>
+
+
+<!-- POSTED JOBS -->
+<section class="card">
+
+<h2>Your Job Listings</h2>
+
+<div id="jobList">
+
+<p>No jobs posted yet.</p>
+
+</div>
+
+</section>
 
 </main>
 
+
 <script src="../../js/hr.js"></script>
+
 </body>
 </html>

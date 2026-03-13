@@ -1,93 +1,116 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Candidate Analysis | TalentCortex</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<title>Applicants | TalentCortex</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <link rel="stylesheet" href="../../css/common.css">
-  <link rel="stylesheet" href="../../css/hr.css">
+<link rel="stylesheet" href="../../css/common.css">
+<link rel="stylesheet" href="../../css/hr.css">
+
 </head>
+
 <body class="hr-page">
 
-<!-- ===== NAVBAR ===== -->
+<!-- NAVBAR -->
 <nav class="hr-navbar">
-  <div class="nav-inner">
-    <div class="nav-left">
-      <h2>TalentCortex</h2>
-      <span>HR Portal</span>
-    </div>
 
-    <div class="nav-right">
-      <a href="dashboard.html" class="dashboard-btn">Dashboard</a>
-    </div>
-  </div>
+<div class="nav-inner">
+
+<div class="nav-left">
+<h2>TalentCortex HR</h2>
+</div>
+
+<div class="nav-right">
+<a href="dashboard.html" class="logout-btn">Dashboard</a>
+<a href="../../index.html" class="logout-btn">Logout</a>
+</div>
+
+</div>
+
 </nav>
+
 
 <main class="container">
 
-  <header class="page-header">
-    <h1>Candidate Analysis</h1>
-    <p>Skill match percentage and missing skills for each candidate</p>
-  </header>
+<header class="page-header">
+<h1>Applicants</h1>
+<p>Candidates who applied for this job</p>
+</header>
 
-  <!-- FILTER BAR -->
-  <section class="filter-bar">
-    <div class="filter-group">
-      <label>Show</label>
-      <select id="filterType">
-        <option value="top">Top Candidates</option>
-        <option value="bottom">Bottom Candidates</option>
-      </select>
-    </div>
 
-    <div class="filter-group">
-      <label>Number</label>
-      <input type="number" id="candidateCount" value="5" min="1">
-    </div>
+<section class="card">
 
-    <button id="applyFilterBtn">Apply</button>
-  </section>
+<h2>Software Engineer Applicants</h2>
 
-  <!-- RESULTS TABLE -->
-  <section class="table-section">
-    <div class="table-wrapper">
-      <table>
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Match %</th>
-            <th>Matched Skills</th>
-            <th>Missing Skills</th>
-          </tr>
-        </thead>
+<div class="applicant-list">
 
-        <tbody id="analysisTable">
-          <tr>
-            <td>Keith Dias</td>
-            <td class="good">88%</td>
-            <td>Python, ML, NLP</td>
-            <td>AWS, Docker</td>
-          </tr>
-          <tr>
-            <td>Dylan Braganza</td>
-            <td class="good">82%</td>
-            <td>Java, SQL</td>
-            <td>Spring Boot</td>
-          </tr>
-          <tr>
-            <td>Arnav Kumar</td>
-            <td class="average">65%</td>
-            <td>HTML, CSS</td>
-            <td>JavaScript, React</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </section>
+<!-- Applicant 1 -->
+<div class="applicant-card">
+
+<div class="applicant-info">
+<h3>John Doe</h3>
+<p>Email: john@example.com</p>
+</div>
+
+<div class="applicant-score">
+<span class="score">88%</span>
+<p>Match Score</p>
+</div>
+
+<div class="applicant-actions">
+<button class="secondary-btn">View Resume</button>
+</div>
+
+</div>
+
+
+<!-- Applicant 2 -->
+<div class="applicant-card">
+
+<div class="applicant-info">
+<h3>Priya Shah</h3>
+<p>Email: priya@example.com</p>
+</div>
+
+<div class="applicant-score">
+<span class="score">82%</span>
+<p>Match Score</p>
+</div>
+
+<div class="applicant-actions">
+<button class="secondary-btn">View Resume</button>
+</div>
+
+</div>
+
+
+<!-- Applicant 3 -->
+<div class="applicant-card">
+
+<div class="applicant-info">
+<h3>Rahul Kumar</h3>
+<p>Email: rahul@example.com</p>
+</div>
+
+<div class="applicant-score">
+<span class="score">75%</span>
+<p>Match Score</p>
+</div>
+
+<div class="applicant-actions">
+<button class="secondary-btn">View Resume</button>
+</div>
+
+</div>
+
+</div>
+
+</section>
 
 </main>
 
 <script src="../../js/hr.js"></script>
+
 </body>
 </html>

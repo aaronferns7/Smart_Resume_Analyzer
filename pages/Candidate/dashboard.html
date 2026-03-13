@@ -18,6 +18,7 @@
     </div>
 
     <div class="nav-right">
+      <a href="jobs.html" class="logout-btn">Browse Jobs</a>
       <a href="../../index.html" class="logout-btn">Logout</a>
     </div>
   </div>
@@ -29,20 +30,21 @@
   <header class="page-header">
     <h1>Candidate Dashboard</h1>
     <p>Upload your resume and track your analysis results</p>
+    <p class="applied-job" id="appliedJobTitle">No job selected yet. Apply to a job to see match results.</p>
   </header>
 
   <!-- ===== STATS ===== -->
   <section class="stats">
     <div class="stat-card">
-      <h3>88%</h3>
+      <h3 id="matchScore">88%</h3>
       <p>Latest Match Score</p>
     </div>
     <div class="stat-card">
-      <h3>5</h3>
+      <h3 id="skillsMatched">5</h3>
       <p>Skills Matched</p>
     </div>
     <div class="stat-card">
-      <h3>2</h3>
+      <h3 id="skillsMissing">2</h3>
       <p>Skills Missing</p>
     </div>
   </section>
