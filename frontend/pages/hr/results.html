@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Applicants | TalentCortex</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="../../css/common.css">
+  <link rel="stylesheet" href="../../css/hr.css">
+  <style>
+    .applicant-card {
+      background: white;
+      border-radius: 16px;
+      padding: 28px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.06);
+      margin-top: 20px;
+    }
+    .applicant-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-bottom: 20px;
+      border-bottom: 1px solid #e2e8f0;
+      padding-bottom: 18px;
+    }
+    .applicant-name { font-size: 20px; font-weight: 700; color: #0b2540; }
+    .applicant-meta { color: #64748b; font-size: 14px; margin-top: 4px; }
+    .score-badge {
+      font-size: 32px;
+      font-weight: 800;
+      text-align: center;
+      min-width: 90px;
+    }
+    .score-label { font-size: 12px; color: #64748b; text-align: center; margin-top: 2px; }
+    .rank-badge {
+      background: #0b2540;
+      color: white;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 700;
+      margin-top: 6px;
+      display: inline-block;
+    }
+ 
+    .section-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-top: 4px;
+    }
+    @media(max-width:800px){ .section-grid { grid-template-columns: 1fr; } }
+ 
+    .info-block {
+      background: #f8fafc;
+      border-radius: 12px;
+      padding: 16px 20px;
+    }
+    .info-block h4 {
+      font-size: 13px;
+      font-weight: 700;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 10px;
+    }
+ 
+    .skill-chip {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      margin: 3px 3px 0 0;
+      font-weight: 500;
+    }
+    .chip-green  { background: #dcfce7; color: #15803d; }
+    .chip-red    { background: #fee2e2; color: #dc2626; }
+    .chip-gray   { background: #e2e8f0; color: #475569; }
+ 
+    .pref-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      padding: 5px 0;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    .pref-row:last-child { border-bottom: none; }
+    .pref-key   { color: #64748b; }
+    .pref-match { font-weight: 600; }
+    .pref-match.yes { color: #15803d; }
+    .pref-match.no  { color: #dc2626; }
+    .pref-match.na  { color: #94a3b8; }
+ 
+    .exp-item {
+      font-size: 13px;
+      padding: 4px 0;
+      color: #334155;
+      border-left: 3px solid #3b82f6;
+      padding-left: 10px;
+      margin-bottom: 8px;
+    }
+ 
+    .view-resume-btn {
+      display: inline-block;
+      background: #3b82f6;
+      color: white;
+      padding: 9px 18px;
+      border-radius: 9px;
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 600;
+      margin-top: 16px;
+    }
+    .view-resume-btn.disabled {
+      background: #cbd5e1;
+      color: #64748b;
+      pointer-events: none;
+    }
+ 
+    .filter-bar { margin-bottom: 10px; }
+    .empty-state { text-align:center; padding:60px 20px; color:#64748b; }
+    #pageStatus { color:#64748b; padding:20px 0; }
+  </style>
+</head>
+<body class="hr-page">
+ 
+<!-- NAVBAR -->
+<nav class="hr-navbar">
+  <div class="nav-inner">
+    <div class="nav-left"><h2>TalentCortex HR</h2></div>
+    <div class="nav-right">
+      <a href="dashboard.html"   class="logout-btn">Dashboard</a>
+      <a href="../../index.html" class="logout-btn" id="logoutBtn">Logout</a>
+    </div>
+  </div>
+</nav>
+ 
+<main class="container">
+ 
+  <header class="page-header">
+    <h1 id="pageTitle">Applicants</h1>
+    <p id="pageSubtitle">AI-ranked candidates for this job</p>
+  </header>
+ 
+  <p id="pageStatus">Loading applicants and computing AI match scores…</p>
+ 
+  <div id="applicantList"></div>
+ 
+</main>
+ 
+<script src="../../js/auth.js"></script>
+<script>
+const API_BASE = window.API || "http://localhost:5000";
+ 
+function authHeaders() {
+  return {
+    "Content-Type":  "application/json",
+    "Authorization": `Bearer ${localStorage.getItem("tc_token") || ""}`
+  };
+}
+function esc(s) {
+  return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+}
+ 
+// ── Preference compatibility display ─────────────────────────────────────
+function prefCompat(candidateVal, jobVal) {
+  if (!candidateVal || candidateVal === "N/A") return { cls: "na", label: "Not set" };
+  if (!jobVal)                                  return { cls: "na", label: esc(candidateVal) };
+  const match = candidateVal.toLowerCase() === jobVal.toLowerCase();
+  return match
+    ? { cls: "yes", label: "✓ " + esc(candidateVal) }
+    : { cls: "no",  label: "✗ " + esc(candidateVal) + " (Job: " + esc(jobVal) + ")" };
+}
+ 
+function scoreColor(s) {
+  return s >= 75 ? "#16a34a" : s >= 50 ? "#f59e0b" : "#dc2626";
+}
+ 
+// ── Render one applicant card ─────────────────────────────────────────────
+function renderCard(candidate, index, job) {
+  const score    = candidate.score || 0;
+  const skills   = candidate.skills   || [];
+  const jobSkills = (job.skills || "").split(",").map(s => s.trim().toLowerCase()).filter(Boolean);
+  const candidateSkillsLower = skills.map(s => s.toLowerCase());
+ 
+  const matched = jobSkills.filter(s => candidateSkillsLower.includes(s));
+  const missing = jobSkills.filter(s => !candidateSkillsLower.includes(s));
+  const extra   = skills.filter(s => !jobSkills.includes(s.toLowerCase())).slice(0, 5);
+ 
+  const experience = candidate.experience || [];
+  const prefs      = candidate.preferences || {};
+ 
+  // Preference compatibility vs job requirements
+  const prefRows = [
+    { key: "Work Mode",        cval: prefs.work_mode,     jval: job.work_mode },
+    { key: "Night Shift",      cval: prefs.night_shift,   jval: null },
+    { key: "Relocate",         cval: prefs.relocate,      jval: null },
+    { key: "Working Hours",    cval: prefs.working_hours, jval: null },
+    { key: "Work-Life Balance",cval: prefs.work_life_bal, jval: null },
+  ];
+ 
+  const resumeUrl = candidate.resume_path
+    ? `${API_BASE}/uploads/${encodeURIComponent(candidate.resume_path.split(/[/\\]/).pop())}`
+    : null;
+ 
+  return `
+    <div class="applicant-card">
+ 
+      <!-- HEADER -->
+      <div class="applicant-header">
+        <div>
+          <div class="applicant-name">${esc(candidate.name || "Unknown")}</div>
+          <div class="applicant-meta">
+            📧 ${esc(candidate.email || "N/A")}
+            ${candidate.phone    ? " · 📞 " + esc(candidate.phone)    : ""}
+            ${candidate.linkedin ? " · <a href='" + esc(candidate.linkedin) + "' target='_blank'>LinkedIn</a>" : ""}
+            ${candidate.github   ? " · <a href='" + esc(candidate.github)   + "' target='_blank'>GitHub</a>"   : ""}
+          </div>
+          <span class="rank-badge">#${index + 1} Overall Rank</span>
+        </div>
+        <div style="text-align:center;">
+          <div class="score-badge" style="color:${scoreColor(score)};">${score}%</div>
+          <div class="score-label">Match Score</div>
+          ${resumeUrl
+            ? `<a class="view-resume-btn" href="${resumeUrl}" target="_blank">View Resume</a>`
+            : `<span class="view-resume-btn disabled">No Resume</span>`}
+        </div>
+      </div>
+ 
+      <!-- CONTENT GRID -->
+      <div class="section-grid">
+ 
+        <!-- Skills Matched -->
+        <div class="info-block">
+          <h4>✅ Skills Matched (${matched.length}/${jobSkills.length})</h4>
+          ${matched.length
+            ? matched.map(s => `<span class="skill-chip chip-green">${esc(s)}</span>`).join("")
+            : "<span style='color:#94a3b8;font-size:13px;'>None matched</span>"}
+        </div>
+ 
+        <!-- Skills Missing -->
+        <div class="info-block">
+          <h4>❌ Skills Missing (${missing.length})</h4>
+          ${missing.length
+            ? missing.map(s => `<span class="skill-chip chip-red">${esc(s)}</span>`).join("")
+            : "<span style='color:#16a34a;font-size:13px;'>All required skills present ✓</span>"}
+        </div>
+ 
+        <!-- Experience -->
+        <div class="info-block">
+          <h4>💼 Experience</h4>
+          ${experience.length
+            ? experience.map(e => `<div class="exp-item">${esc(e)}</div>`).join("")
+            : "<span style='color:#94a3b8;font-size:13px;'>No experience data extracted</span>"}
+        </div>
+ 
+        <!-- Candidate Preferences vs Job -->
+        <div class="info-block">
+          <h4>⚙️ Candidate Preferences</h4>
+          ${prefRows.map(row => {
+            const compat = prefCompat(row.cval, row.jval);
+            return `
+              <div class="pref-row">
+                <span class="pref-key">${row.key}</span>
+                <span class="pref-match ${compat.cls}">${compat.label}</span>
+              </div>`;
+          }).join("")}
+        </div>
+ 
+        <!-- Additional Skills -->
+        ${extra.length ? `
+        <div class="info-block" style="grid-column:1/-1;">
+          <h4>⭐ Additional Skills Candidate Has</h4>
+          ${extra.map(s => `<span class="skill-chip chip-gray">${esc(s)}</span>`).join("")}
+        </div>` : ""}
+ 
+      </div>
+    </div>`;
+}
+ 
+// ── Load applicants ───────────────────────────────────────────────────────
+async function loadApplicants() {
+  const params  = new URLSearchParams(window.location.search);
+  const jobId   = params.get("job_id");
+  const status  = document.getElementById("pageStatus");
+  const list    = document.getElementById("applicantList");
+ 
+  if (!status || !list) {
+    // Required elements not present (possibly wrong HTML file/version).
+    console.error("Missing required page elements: #pageStatus or #applicantList");
+    return;
+  }
+ 
+  if (!jobId) {
+    status.textContent = "No job selected. Go to dashboard and click View Applicants.";
+    return;
+  }
+ 
+  try {
+    // If the backend isn't reachable or takes too long, abort to avoid hanging.
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000);
+
+    const res  = await fetch(`${API_BASE}/api/applicants/${jobId}`, {
+      headers: authHeaders(),
+      signal:  controller.signal
+    });
+    clearTimeout(timeoutId);
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      status.textContent = data.error || "Failed to load applicants.";
+      return;
+    }
+ 
+    const job = data.job || {};
+    document.getElementById("pageTitle").textContent =
+      `Applicants — ${job.title || ""}`;
+    document.getElementById("pageSubtitle").textContent =
+      `${job.company || ""} · ${job.location || ""} · ${data.matches?.length || 0} applicant(s) ranked by AI`;
+ 
+    status.textContent = "";
+ 
+    if (!data.matches || data.matches.length === 0) {
+      list.innerHTML = `
+        <div class="empty-state">
+          <p style="font-size:18px;">No applicants yet.</p>
+          <span>Candidates who apply and upload their resume will appear here, ranked by AI match score.</span>
+        </div>`;
+      return;
+    }
+ 
+    list.innerHTML = data.matches
+      .map((c, i) => renderCard(c, i, job))
+      .join("");
+ 
+  } catch(e) {
+    if (e.name === "AbortError") {
+      status.textContent = "Request timed out. Is the backend running on port 5000?";
+    } else {
+      status.textContent = "Failed to load. Is the backend running on port 5000?";
+    }
+    console.error(e);
+  }
+}
+ 
+document.addEventListener("DOMContentLoaded", loadApplicants);
+</script>
+</body>
+</html>

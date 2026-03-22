@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Candidate Login | TalentCortex</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="../../css/auth.css">
+</head>
+<body>
+
+<div class="auth-container">
+  <div class="auth-card">
+    <h2>TalentCortex</h2>
+    <h3>Candidate Login</h3>
+    <p class="subtitle">Access your dashboard and resume analysis</p>
+
+    <div class="input-group">
+      <label>Email</label>
+      <input type="email" id="email" placeholder="you@example.com" required>
+    </div>
+
+    <div class="input-group">
+      <label>Password</label>
+      <input type="password" id="password" placeholder="••••••••" required>
+    </div>
+
+    <button class="auth-btn" id="loginBtn">Login</button>
+    <button class="auth-btn" id="registerBtn"
+            style="margin-top:8px; background:#0b2540;">
+      Register
+    </button>
+
+    <p class="switch-link">HR? <a href="hr-login.html">Login here</a></p>
+  </div>
+</div>
+
+<script src="../../js/auth.js"></script>
+<script>
+  document.getElementById("loginBtn").addEventListener("click", () => login("candidate"));
+  document.getElementById("registerBtn").addEventListener("click", () => register("candidate"));
+
+  // Allow Enter key to submit
+  document.addEventListener("keydown", e => {
+    if (e.key === "Enter") login("candidate");
+  });
+</script>
+</body>
+</html>

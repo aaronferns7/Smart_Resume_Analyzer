@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Resume Analysis | TalentCortex</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="../../css/candidate.css">
+  <style>
+    .feedback-section {
+      background: white;
+      border-radius: 18px;
+      padding: 30px;
+      margin-top: 25px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    }
+    .feedback-section h2 { color: #0b2540; margin-bottom: 8px; }
+    .feedback-section .sub { color: #64748b; font-size: 14px; margin-bottom: 20px; }
+    .feedback-body {
+      line-height: 1.8;
+      color: #334155;
+      white-space: pre-wrap;
+      font-size: 15px;
+    }
+    .feedback-body strong { color: #0b2540; }
+    .score-circle-wrap { display:flex; align-items:center; gap:30px; flex-wrap:wrap; }
+    .score-circle {
+      width: 130px; height: 130px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      background: conic-gradient(#3b82f6 0%, #e2e8f0 0%);
+      flex-shrink: 0;
+    }
+    .score-inner {
+      width: 96px; height: 96px; background: white; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 24px; font-weight: 700; color: #0b2540;
+    }
+    .tag { display:inline-block; padding:5px 14px; border-radius:20px;
+           background:#3b82f6; color:white; font-size:13px; margin:4px 4px 0 0; }
+    .tag.red  { background:#fee2e2; color:#dc2626; }
+    .tag.gray { background:#e2e8f0; color:#334155; }
+    .mini-row { display:flex; gap:30px; margin-top:16px; flex-wrap:wrap; }
+    .mini-row div { text-align:center; }
+    .mini-row strong { display:block; font-size:22px; color:#0b2540; }
+    .mini-row span   { font-size:13px; color:#64748b; }
+    .empty-msg { color:#94a3b8; font-size:14px; }
+  </style>
+</head>
+<body class="candidate-page">
+ 
+<!-- NAVBAR -->
+<nav class="candidate-navbar">
+  <div class="nav-inner">
+    <div class="nav-left"><h2>TalentCortex</h2></div>
+    <div class="nav-right">
+      <a href="../../index.html" class="logout-btn" id="logoutBtn">Logout</a>
+    </div>
+  </div>
+</nav>
+ 
+<div class="container">
+  <a href="dashboard.html" class="back-link">← Back to Dashboard</a>
+ 
+  <div class="header-row">
+    <div>
+      <h1>Resume Analysis</h1>
+      <p class="subtitle" id="analysisSubtitle">AI-powered analysis of your resume</p>
+    </div>
+    <a href="detailed-analysis.html" class="suggestion-btn">View Suggestions →</a>
+  </div>
+ 
+  <!-- PARSED RESUME -->
+  <section id="parsedResume" class="card">
+    <h3>Uploaded Resume</h3>
+    <p class="card-subtitle">Preview of extracted resume data</p>
+    <div id="parsedResumeContent">
+      <div class="empty-state">
+        <p>No resume data found.</p>
+        <span>Go back to dashboard and upload a resume.</span>
+      </div>
+    </div>
+  </section>
+ 
+  <!-- MATCH SCORE -->
+  <section class="card" id="scoreSection" style="display:none;">
+    <div class="score-circle-wrap">
+      <div class="score-circle" id="scoreCircle">
+        <div class="score-inner" id="scoreVal">0%</div>
+      </div>
+      <div>
+        <h2>Skill Match Score</h2>
+        <p class="card-subtitle" id="scoreDesc">Compared against your applied job</p>
+        <div class="mini-row">
+          <div><strong id="matchedCount">0</strong><span>Matched</span></div>
+          <div><strong id="missingCount">0</strong><span>Missing</span></div>
+          <div><strong id="totalCount">0</strong><span>Required</span></div>
+        </div>
+      </div>
+    </div>
+ 
+    <!-- Skills -->
+    <h4 style="margin-top:22px;">Matched Skills</h4>
+    <div id="matchedSkills" class="tags" style="margin-top:8px;"></div>
+    <h4 style="margin-top:18px;">Missing Skills</h4>
+    <div id="missingSkills" class="tags" style="margin-top:8px;"></div>
+  </section>
+ 
+  <!-- AI FEEDBACK -->
+  <section class="feedback-section">
+    <h2>🤖 AI Analysis & Suggestions</h2>
+    <p class="sub" id="feedbackSub">Personalized AI feedback on your resume</p>
+    <div class="feedback-body" id="feedbackBody">
+      <span class="empty-msg">No AI feedback yet. Click "Analyze Resume" on your dashboard.</span>
+    </div>
+  </section>
+ 
+</div>
+ 
+<script src="../../js/auth.js"></script>
+<script>
+function esc(s) {
+  return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+}
+ 
+document.addEventListener("DOMContentLoaded", () => {
+  const data     = JSON.parse(localStorage.getItem("resumeAnalysis") || "null");
+  const job      = JSON.parse(localStorage.getItem("selectedJob")    || "null");
+  const feedback = localStorage.getItem("aiFeedback") || "";
+ 
+  // ── Parsed resume preview ─────────────────────────────────────────────
+  const container = document.getElementById("parsedResumeContent");
+  if (data) {
+    const parsed = data.parsed_content || {};
+    const meta   = data.contact_info   || {};
+    container.innerHTML = `
+      <div class="parsed-block">
+        <h4>Basic Information</h4>
+        <ul class="parsed-list">
+          <li><strong>Name:</strong>     ${esc(parsed.name   || "—")}</li>
+          <li><strong>Email:</strong>    ${esc(meta.email    || "—")}</li>
+          <li><strong>Phone:</strong>    ${esc(meta.phone    || "—")}</li>
+          <li><strong>LinkedIn:</strong> ${esc(meta.linkedin || "—")}</li>
+          <li><strong>GitHub:</strong>   ${esc(meta.github   || "—")}</li>
+        </ul>
+      </div>
+      <div class="parsed-block">
+        <h4>Skills (${(parsed.skills||[]).length})</h4>
+        <div style="margin-top:8px;">
+          ${(parsed.skills||[]).map(s=>`<span class="tag gray">${esc(s)}</span>`).join("") || "<span class='empty-msg'>None detected</span>"}
+        </div>
+      </div>
+      <div class="parsed-block">
+        <h4>Experience</h4>
+        <ul class="parsed-list">
+          ${(parsed.experience||[]).map(x=>`<li>${esc(x)}</li>`).join("") || "<li class='empty-msg'>None detected</li>"}
+        </ul>
+      </div>`;
+  }
+ 
+  // ── Skill match score against job ────────────────────────────────────
+  if (data && job) {
+    const resumeSkills = (data.parsed_content?.skills || []).map(s => s.toLowerCase());
+    const jobSkills    = Array.isArray(job.skills)
+      ? job.skills.map(s => s.toLowerCase())
+      : (job.skills || "").split(",").map(s => s.trim().toLowerCase()).filter(Boolean);
+ 
+    if (jobSkills.length > 0) {
+      const matched = jobSkills.filter(s => resumeSkills.includes(s));
+      const missing = jobSkills.filter(s => !resumeSkills.includes(s));
+      const score   = Math.round((matched.length / jobSkills.length) * 100);
+ 
+      document.getElementById("scoreSection").style.display = "block";
+      document.getElementById("scoreDesc").textContent =
+        `Compared against: ${job.title}`;
+ 
+      // Animate circle
+      const circle = document.getElementById("scoreCircle");
+      circle.style.background =
+        `conic-gradient(#3b82f6 ${score}%, #e2e8f0 0%)`;
+      document.getElementById("scoreVal").textContent    = `${score}%`;
+      document.getElementById("matchedCount").textContent = matched.length;
+      document.getElementById("missingCount").textContent = missing.length;
+      document.getElementById("totalCount").textContent   = jobSkills.length;
+ 
+      document.getElementById("matchedSkills").innerHTML =
+        matched.length
+          ? matched.map(s=>`<span class="tag">${esc(s)}</span>`).join("")
+          : "<span class='empty-msg'>None matched</span>";
+ 
+      document.getElementById("missingSkills").innerHTML =
+        missing.length
+          ? missing.map(s=>`<span class="tag red">${esc(s)}</span>`).join("")
+          : "<span style='color:#16a34a;'>✅ All required skills present!</span>";
+    }
+  }
+ 
+  // ── AI Feedback ───────────────────────────────────────────────────────
+  if (feedback) {
+    const feedbackEl = document.getElementById("feedbackBody");
+    // Format markdown-style headers
+    feedbackEl.innerHTML = feedback
+      .replace(/## (.+)/g, "<strong style='font-size:16px;color:#0b2540;display:block;margin:16px 0 8px;'>$1</strong>")
+      .replace(/\* (.+)/g, "• $1<br>")
+      .replace(/\n/g, "<br>");
+ 
+    if (job) {
+      document.getElementById("feedbackSub").textContent =
+        `Personalized AI feedback compared against: ${job.title}`;
+    }
+  }
+ 
+  // Logout
+  const lb = document.getElementById("logoutBtn");
+  if (lb) lb.addEventListener("click", e => { e.preventDefault(); logout(); });
+});
+</script>
+</body>
+</html>
