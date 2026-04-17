@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <title>Candidate Dashboard | TalentCortex</title>
@@ -20,9 +21,16 @@
       font-size: 15px;
       transition: opacity 0.2s;
     }
-    .analyze-btn:hover { opacity: 0.88; }
-    .analyze-btn:disabled { opacity: 0.5; cursor: not-allowed; }
- 
+
+    .analyze-btn:hover {
+      opacity: 0.88;
+    }
+
+    .analyze-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
     .upload-btn {
       background: #3b82f6;
       color: white;
@@ -36,159 +44,165 @@
       margin-top: 12px;
       transition: opacity 0.2s;
     }
-    .upload-btn:hover { opacity: 0.88; }
-    .upload-btn:disabled { opacity: 0.5; cursor: not-allowed; }
- 
+
+    .upload-btn:hover {
+      opacity: 0.88;
+    }
+
+    .upload-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
     .status-msg {
       margin-top: 10px;
       font-size: 13px;
       color: #64748b;
       min-height: 20px;
     }
-    .status-msg.success { color: #16a34a; }
-    .status-msg.error   { color: #dc2626; }
- 
-    .stat-card h3 { font-size: 28px; color: #0b2540; }
-    .stat-card p  { color: #64748b; margin-top: 4px; }
+
+    .status-msg.success {
+      color: #16a34a;
+    }
+
+    .status-msg.error {
+      color: #dc2626;
+    }
+
+    .stat-card h3 {
+      font-size: 28px;
+      color: #0b2540;
+    }
+
+    .stat-card p {
+      color: #64748b;
+      margin-top: 4px;
+    }
   </style>
 </head>
+
 <body class="candidate-page">
- 
-<!-- NAVBAR -->
-<nav class="candidate-navbar">
-  <div class="nav-inner">
-    <div class="nav-left"><h2>TalentCortex</h2></div>
-    <div class="nav-right">
-      <a href="jobs.html"        class="logout-btn">Browse Jobs</a>
-      <a href="../../index.html" class="logout-btn" id="logoutBtn">Logout</a>
-    </div>
-  </div>
-</nav>
- 
-<main class="container">
- 
-  <!-- HEADER -->
-  <header class="page-header">
-    <h1>Candidate Dashboard</h1>
-    <p>Upload your resume and track your analysis results</p>
-    <p class="applied-job" id="appliedJobTitle">
-      No job selected yet. Browse jobs to apply.
-    </p>
-  </header>
- 
-  <!-- STATS — populated by JS -->
-  <section class="stats">
-    <div class="stat-card">
-      <h3 id="matchScore">—</h3>
-      <p>Latest Match Score</p>
-    </div>
-    <div class="stat-card">
-      <h3 id="skillsMatched">—</h3>
-      <p>Skills Matched</p>
-    </div>
-    <div class="stat-card">
-      <h3 id="skillsMissing">—</h3>
-      <p>Skills Missing</p>
-    </div>
-  </section>
- 
-  <!-- PREFERENCES + UPLOAD -->
-  <section class="upload-section single-column">
- 
-    <!-- PREFERENCES -->
-    <div class="upload-card">
-      <h3>Candidate Preferences</h3>
-      <p class="card-subtitle">Help us match you with suitable job roles</p>
- 
-      <form id="preferenceForm">
-        <div class="form-group">
-          <label>Preferred Work Mode</label>
-          <select name="workMode">
-            <option value="remote">Remote</option>
-            <option value="hybrid">Hybrid</option>
-            <option value="onsite">Onsite</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Willing to Work Night Shift?</label>
-          <select name="nightShift">
-            <option value="no">No</option>
-            <option value="yes">Yes</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Willing to Relocate?</label>
-          <select name="relocate">
-            <option value="no">No</option>
-            <option value="yes">Yes</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Preferred Working Hours</label>
-          <select name="workingHours">
-            <option value="flexible">Flexible</option>
-            <option value="8">8 Hours</option>
-            <option value="9">9 Hours</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Work-Life Balance Priority</label>
-          <select name="workLifeBalance">
-            <option value="high">High</option>
-            <option value="medium">Medium</option>
-            <option value="low">Low</option>
-          </select>
-        </div>
-        <br>
-        <button type="button" id="savePreferencesBtn" class="upload-btn">
-          Save Preferences
-        </button>
-        <p class="status-msg" id="prefStatus"></p>
-      </form>
-    </div>
- 
-    <!-- UPLOAD RESUME -->
-    <div class="upload-card">
-      <h3>Upload Resume</h3>
-      <p class="card-subtitle">Upload your PDF resume (max 10 MB)</p>
- 
-      <div class="upload-controls" style="margin-top:16px;">
-        <input type="file" id="resumeFile" accept=".pdf">
-        <button class="upload-btn" id="uploadResumeBtn" disabled>
-          Upload Resume
-        </button>
-        <button class="upload-btn" id="uploadAndAnalyzeBtn" style="margin-top:12px;">
-          Upload & Analyze
-        </button>
-        <p class="status-msg" id="uploadStatus"></p>
+
+  <!-- NAVBAR -->
+  <nav class="candidate-navbar">
+    <div class="nav-inner">
+      <div class="nav-left">
+        <h2>TalentCortex</h2>
       </div>
- 
-      <!-- PARSED RESUME DETAILS -->
-      <div style="margin-top:28px; border-top:1px solid #e2e8f0; padding-top:20px;">
-        <h3>Parsed Resume Details</h3>
-        <p class="card-subtitle">Extracted information from your uploaded resume</p>
- 
-        <div id="parsedData">
-          <div class="empty-state">
-            <p>No resume uploaded yet.</p>
-            <span>Upload a resume above to see extracted details.</span>
+      <div class="nav-right">
+        <a href="jobs.html" class="logout-btn">Browse Jobs</a>
+        <a href="../../index.html" class="logout-btn" id="logoutBtn">Logout</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container">
+
+    <!-- HEADER -->
+    <header class="page-header">
+      <h1>Candidate Dashboard</h1>
+      <p>Upload your resume and track your analysis results</p>
+      <p class="applied-job" id="appliedJobTitle">
+        No job selected yet. Browse jobs to apply.
+      </p>
+    </header>
+
+    <!-- STATS — populated by JS -->
+    <section class="stats">
+      <div class="stat-card">
+        <h3 id="matchScore">—</h3>
+        <p>Latest Match Score</p>
+      </div>
+      <div class="stat-card">
+        <h3 id="skillsMatched">—</h3>
+        <p>Skills Matched</p>
+      </div>
+      <div class="stat-card">
+        <h3 id="skillsMissing">—</h3>
+        <p>Skills Missing</p>
+      </div>
+    </section>
+
+    <!-- PREFERENCES + UPLOAD -->
+    <section class="upload-section single-column">
+
+      <!-- PREFERENCES -->
+      <div class="upload-card">
+        <h3>Candidate Preferences</h3>
+        <p class="card-subtitle">Help us match you with suitable job roles</p>
+
+        <form id="preferenceForm">
+          <div class="form-group">
+            <label>Preferred Work Mode</label>
+            <select name="workMode">
+              <option value="remote">Remote</option>
+              <option value="hybrid">Hybrid</option>
+              <option value="onsite">Onsite</option>
+            </select>
           </div>
+          <div class="form-group">
+            <label>Willing to Work Night Shift?</label>
+            <select name="nightShift">
+              <option value="no">No</option>
+              <option value="yes">Yes</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Willing to Relocate?</label>
+            <select name="relocate">
+              <option value="no">No</option>
+              <option value="yes">Yes</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Preferred Working Hours</label>
+            <select name="workingHours">
+              <option value="flexible">Flexible</option>
+              <option value="8">8 Hours</option>
+              <option value="9">9 Hours</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Work-Life Balance Priority</label>
+            <select name="workLifeBalance">
+              <option value="high">High</option>
+              <option value="medium">Medium</option>
+              <option value="low">Low</option>
+            </select>
+          </div>
+          <br>
+          <button type="button" id="savePreferencesBtn" class="upload-btn">
+            Save Preferences
+          </button>
+          <p class="status-msg" id="prefStatus"></p>
+        </form>
+      </div>
+
+      <!-- UPLOAD RESUME -->
+      <div class="upload-card">
+        <h3>Upload &amp; Analyze Resume</h3>
+        <p class="card-subtitle">Upload your PDF resume (max 10 MB), then click Analyze to get AI feedback</p>
+
+        <div class="upload-controls" style="margin-top:16px;">
+          <input type="file" id="resumeFile" accept=".pdf">
+          <button class="upload-btn" id="uploadResumeBtn" disabled>
+            Upload Resume
+          </button>
+          <p class="status-msg" id="uploadStatus"></p>
         </div>
- 
-        <!-- Analyze button (enabled once we have an uploaded resume) -->
-        <button class="analyze-btn" id="analyzeResumeBtn" disabled
-                style="margin-top:20px;">
+
+        <button class="analyze-btn" id="analyzeResumeBtn" disabled style="margin-top:20px;">
           🔍 Analyze Resume
         </button>
         <p class="status-msg" id="analyzeStatus"></p>
       </div>
-    </div>
- 
-  </section>
- 
-</main>
- 
-<script src="../../js/auth.js"></script>
-<script src="../../js/candidate.js"></script>
+
+    </section>
+
+  </main>
+
+  <script src="../../js/auth.js"></script>
+  <script src="../../js/candidate.js"></script>
 </body>
+
 </html>

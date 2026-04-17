@@ -401,70 +401,109 @@ def apply_to_job():
 # ANALYZE RESUME (Candidate) — optionally compare to a job description
 # ─────────────────────────────────────────────
 
+@app.route("/api/latest_resume", methods=["GET"])
+@candidate_required
+def get_latest_resume():
+    import glob
+    user_id = request.user["user_id"]
+    pattern = os.path.join(app.config["UPLOAD_FOLDER"], f"candidate_{user_id}_*.pdf")
+    files = glob.glob(pattern)
+    if files:
+        latest = max(files, key=os.path.getmtime)
+        return jsonify({"has_resume": True, "filename": os.path.basename(latest)}), 200
+    return jsonify({"has_resume": False}), 200
+
 @app.route("/api/analyze_resume", methods=["POST"])
 @candidate_required
 def analyze_resume():
     """Analyze the logged-in candidate's resume vs the given job description.
 
-    Expects JSON { job_id: <int> }.
+    Expects JSON { job_id: <int> } optionally.
     Returns a score percentage or an error.
     """
-
     if match_job is None:
         return jsonify({"error": "Matching engine unavailable."}), 500
 
     data = request.get_json(silent=True) or {}
     job_id = data.get("job_id")
-    if not job_id:
-        return jsonify({"error": "job_id is required."}), 400
+
+    user_id = request.user["user_id"]
+    
+    import glob
+    pattern = os.path.join(app.config["UPLOAD_FOLDER"], f"candidate_{user_id}_*.pdf")
+    files = glob.glob(pattern)
+    
+    if not files:
+        return jsonify({"error": "No resume uploaded. Please click 'Upload Resume' first."}), 400
+        
+    resume_path = max(files, key=os.path.getmtime)
 
     conn = get_connection()
     try:
-        job = conn.execute("SELECT * FROM jobs WHERE id = ?", (job_id,)).fetchone()
-        if not job:
-            return jsonify({"error": "Job not found."}), 404
+        jd_text = None
+        if job_id:
+            job = conn.execute("SELECT * FROM jobs WHERE id = ?", (job_id,)).fetchone()
+            if not job:
+                return jsonify({"error": "Job not found."}), 404
 
-        # Ensure the candidate has uploaded a resume for this job.
-        app_row = conn.execute(
-            "SELECT resume_path FROM applications WHERE job_id = ? AND candidate_id = ?",
-            (job_id, request.user["user_id"])
-        ).fetchone()
-        if not app_row or not app_row["resume_path"]:
-            return jsonify({"error": "No resume uploaded for this job. Please upload before analyzing."}), 400
-
-        job_dict = dict(job)
-        jd_text  = (
-            f"{job_dict['title']} {job_dict['description']} "
-            f"Required skills: {job_dict['skills']}"
-        )
+            job_dict = dict(job)
+            jd_text  = (
+                f"{job_dict['title']} {job_dict['description']} "
+                f"Required skills: {job_dict['skills']}"
+            )
 
     finally:
         conn.close()
 
-    # Re-process the stored resume file to provide parsed content for front-end display.
-    # This keeps analysis consistent even if the user reloads the page.
+    # First, try to fetch the ALREADY PARSED data from ChromaDB
     parsed_result = None
-    if process_resume is not None and app_row and app_row.get("resume_path"):
-        # Convert URL path to local file path
-        resume_url = app_row.get("resume_path")
-        resume_file = resume_url.split("/uploads/")[-1]
-        resume_path = os.path.join(UPLOAD_FOLDER, resume_file)
+    try:
+        from resume_parser import resume_collection
+        res = resume_collection.get(ids=[f"candidate_{user_id}"])
+        if res and res["metadatas"] and len(res["metadatas"]) > 0:
+            meta = res["metadatas"][0]
+            parsed_result = {
+                "parsed_content": {
+                    "name": meta.get("name", "Unknown"),
+                    "skills": json.loads(meta.get("skills", "[]")),
+                    "experience": json.loads(meta.get("experience", "[]"))
+                },
+                "contact_info": {
+                    "email": meta.get("email", ""),
+                    "phone": meta.get("phone", ""),
+                    "linkedin": meta.get("linkedin", ""),
+                    "github": meta.get("github", "")
+                }
+            }
+            logger.info("✅ Fetched parsed resume data from ChromaDB.")
+    except Exception as e:
+        logger.warning(f"Failed to fetch from ChromaDB: {e}")
+
+    # Fallback to re-parsing if missing
+    if not parsed_result and process_resume is not None:
         try:
-            parsed_result = process_resume(resume_path, user_id=str(request.user["user_id"]))
+            parsed_result = process_resume(resume_path, user_id=str(user_id))
         except Exception as e:
             logger.warning(f"Failed to re-parse resume for analysis: {e}")
 
-    match_result = match_job(jd_text, candidate_ids=[str(request.user["user_id"])])
-    if match_result.get("error"):
-        return jsonify({"error": match_result.get("error")}), 500
-
-    matches = match_result.get("matches", [])
-    score = matches[0].get("score", 0) if matches else 0
+    score = 0
+    if jd_text:
+        match_result = match_job(jd_text, candidate_ids=[str(user_id)])
+        if match_result.get("error"):
+            logger.warning(f"Match error: {match_result.get('error')}")
+        else:
+            matches = match_result.get("matches", [])
+            score = matches[0].get("score", 0) if matches else 0
 
     response = {"status": "success", "score": score}
-    if parsed_result:
+    if parsed_result and "parsed_content" in parsed_result:
         response["parsed_content"] = parsed_result.get("parsed_content")
         response["contact_info"]  = parsed_result.get("contact_info")
+    elif parsed_result and "error" in parsed_result:
+        return jsonify({"error": parsed_result["error"]}), 400
+    else:
+        return jsonify({"error": "Could not extract resume content. Please re-upload your resume."}), 400
+
     return jsonify(response), 200
 
 
@@ -595,24 +634,47 @@ def generate_feedback():
         skills     = parsed.get("skills",     [])
         experience = parsed.get("experience", [])
 
+        # ── Structured 3-section prompt ────────────────────────────────────
+        # Each section uses a ## header so the frontend can split them cleanly.
+        # Minimum 3 paragraphs per section is explicitly required.
+
         if job_description:
             template = (
-                "You are an expert career coach. Analyze this candidate's resume against "
-                "the job description and give detailed, actionable feedback.\n\n"
-                "CANDIDATE:\nName: {name}\nSkills: {skills}\nExperience: {experience}\n\n"
+                "You are an expert career coach and technical recruiter. "
+                "Your task is to give {name} detailed, honest, and highly actionable feedback "
+                "on their resume, comparing it against the provided job description and doing a general market analysis.\n\n"
+                "CANDIDATE:\n"
+                "  Name:       {name}\n"
+                "  Skills:     {skills}\n"
+                "  Experience: {experience}\n\n"
                 "JOB DESCRIPTION:\n{job_description}\n\n"
-                "## Resume Strengths\n## Areas for Improvement\n"
-                "## Missing Skills\n## Recommended Actions\n\n"
-                "Be specific and constructive. Use bullet points."
+                "INSTRUCTIONS — You MUST structure your entire response using exactly these three "
+                "sections, in this order. Keep your points SHORT, DIRECT, and use BULLET POINTS.\n\n"
+                "## Skills Gap\n"
+                "Bullet points comparing the candidate's skills against the job requirements. Point out any missing skills and what they should learn.\n\n"
+                "## Experience & Courses Recommended\n"
+                "Bullet points evaluating the candidate's experience for the role. Suggest concrete courses or projects.\n\n"
+                "## General & Market Analysis\n"
+                "Bullet points providing a short, point-to-point market analysis of how competitive they are right now, along with any other concise advice.\n"
             )
             input_vars = ["name", "skills", "experience", "job_description"]
         else:
             template = (
-                "You are an expert career coach. Analyze this resume and give detailed feedback.\n\n"
-                "CANDIDATE:\nName: {name}\nSkills: {skills}\nExperience: {experience}\n\n"
-                "## Resume Strengths\n## Areas for Improvement\n"
-                "## Skill Development Recommendations\n## Recommended Actions\n\n"
-                "Be specific and constructive. Use bullet points."
+                "You are an expert career coach and technical recruiter. "
+                "Your task is to give {name} detailed, honest, and highly actionable feedback "
+                "on their resume based on current market standards.\n\n"
+                "CANDIDATE:\n"
+                "  Name:       {name}\n"
+                "  Skills:     {skills}\n"
+                "  Experience: {experience}\n\n"
+                "INSTRUCTIONS — You MUST structure your entire response using exactly these three "
+                "sections, in this order. Keep your points SHORT, DIRECT, and use BULLET POINTS.\n\n"
+                "## Skills Gap\n"
+                "Bullet points evaluating the candidate's skills against current market demand. Point out any missing skills and what they should learn.\n\n"
+                "## Experience & Courses Recommended\n"
+                "Bullet points evaluating the candidate's experience. Suggest concrete courses, projects, or ways to enhance their background.\n\n"
+                "## General & Market Analysis\n"
+                "Bullet points providing a short, point-to-point market analysis of how competitive they are, along with any other concise advice.\n"
             )
             input_vars = ["name", "skills", "experience"]
 
@@ -622,7 +684,7 @@ def generate_feedback():
 
         invoke_data = {
             "name":       name,
-            "skills":     ", ".join(skills)     if skills     else "Not specified",
+            "skills":     ", ".join(skills)      if skills      else "Not specified",
             "experience": " | ".join(experience) if experience else "Not specified",
         }
         if job_description:

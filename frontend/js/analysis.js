@@ -100,49 +100,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // ── AI Feedback button ────────────────────────────────────────────────────
-  const feedbackBtn = document.querySelector(".feedback-btn");
-  if (feedbackBtn) {
-    feedbackBtn.addEventListener("click", async () => {
-      const original                 = feedbackBtn.textContent;
-      feedbackBtn.textContent        = "Generating AI Feedback…";
-      feedbackBtn.style.opacity      = "0.7";
-      feedbackBtn.style.pointerEvents = "none";
-
-      try {
-        const res  = await fetch(`${API_BASE}/api/generate_feedback`, {
-          method:  "POST",
-          headers: {
-            "Content-Type":  "application/json",
-            "Authorization": `Bearer ${localStorage.getItem("tc_token") || ""}`
-          },
-          body: JSON.stringify({ resume_data: data })
-        });
-        const result = await res.json();
-
-        if (res.ok && result.feedback) {
-          const feedbackText = document.querySelector(".feedback-text");
-          if (feedbackText) {
-            feedbackText.innerHTML = result.feedback
-              .replace(/\n/g, "<br>")
-              .replace(/## /g, "<strong>")
-              .replace(/\n/g, "</strong><br>");
-          }
-          feedbackBtn.textContent = "Feedback Loaded ✓";
-        } else {
-          alert(result.error || "Feedback generation failed.");
-          feedbackBtn.textContent        = original;
-          feedbackBtn.style.opacity      = "1";
-          feedbackBtn.style.pointerEvents = "auto";
-        }
-      } catch {
-        alert("Server error generating feedback.");
-        feedbackBtn.textContent        = original;
-        feedbackBtn.style.opacity      = "1";
-        feedbackBtn.style.pointerEvents = "auto";
-      }
-    });
-  }
 });
 
 function esc(str) {

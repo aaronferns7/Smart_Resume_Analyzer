@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>AI Feedback | TalentCortex</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="../../css/common.css">
+  <link rel="stylesheet" href="../../css/candidate.css">
+  <style>
+    /* ── Page-level tweaks (no design changes) ── */
+    .feedback-card {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
+      padding: 32px 36px;
+      margin-top: 28px;
+    }
+
+    .feedback-card h3 {
+      font-size: 18px;
+      font-weight: 700;
+      color: #0b2540;
+      margin-bottom: 6px;
+    }
+
+    .feedback-card .card-subtitle {
+      color: #64748b;
+      font-size: 13px;
+      margin-bottom: 20px;
+    }
+
+    /* Three section cards */
+    .feedback-section {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 22px 26px;
+      margin-bottom: 18px;
+    }
+
+    .feedback-section:last-child {
+      margin-bottom: 0;
+    }
+
+    .feedback-section .section-label {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 15px;
+      font-weight: 700;
+      color: #0b2540;
+      margin-bottom: 14px;
+    }
+
+    .feedback-section .section-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 17px;
+      flex-shrink: 0;
+    }
+
+    .icon-skills {
+      background: #dbeafe;
+    }
+
+    .icon-experience {
+      background: #dcfce7;
+    }
+
+    .icon-general {
+      background: #fef9c3;
+    }
+
+    .feedback-section p,
+    .feedback-section li {
+      color: #374151;
+      font-size: 14px;
+      line-height: 1.75;
+    }
+
+    .feedback-section ul {
+      padding-left: 18px;
+      margin: 8px 0 0;
+    }
+
+    .feedback-section ul li {
+      margin-bottom: 6px;
+    }
+
+    /* Loading state */
+    .feedback-loading {
+      text-align: center;
+      padding: 56px 20px;
+      color: #64748b;
+    }
+
+    .feedback-loading .spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid #e2e8f0;
+      border-top-color: #3b82f6;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 18px;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .feedback-loading p {
+      font-size: 14px;
+      margin-top: 6px;
+    }
+
+    /* Error state */
+    .feedback-error {
+      text-align: center;
+      padding: 40px 20px;
+      color: #dc2626;
+      font-size: 14px;
+    }
+
+    /* Back button */
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #f1f5f9;
+      color: #0b2540;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.2s;
+      margin-bottom: 4px;
+    }
+
+    .back-btn:hover {
+      background: #e2e8f0;
+    }
+
+    /* Candidate name tag */
+    .candidate-tag {
+      display: inline-block;
+      background: #dbeafe;
+      color: #1d4ed8;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 4px 12px;
+      border-radius: 20px;
+      margin-bottom: 16px;
+    }
+
+    /* Score pill */
+    .score-pill {
+      display: inline-block;
+      background: #0b2540;
+      color: #fff;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 4px 14px;
+      border-radius: 20px;
+      margin-left: 10px;
+    }
+
+    .stat-card h3 {
+      font-size: 28px;
+      color: #0b2540;
+    }
+
+    .stat-card p {
+      color: #64748b;
+      margin-top: 4px;
+    }
+  </style>
+</head>
+
+<body class="candidate-page">
+
+  <!-- NAVBAR -->
+  <nav class="candidate-navbar">
+    <div class="nav-inner">
+      <div class="nav-left">
+        <h2>TalentCortex</h2>
+      </div>
+      <div class="nav-right">
+        <a href="jobs.html" class="logout-btn">Browse Jobs</a>
+        <a href="../../index.html" class="logout-btn" id="logoutBtn">Logout</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container">
+
+    <!-- HEADER -->
+    <header class="page-header">
+      <h1>AI Resume Feedback</h1>
+      <p>Personalised analysis powered by Gemini AI, based on your resume and the job you applied for</p>
+      <p class="applied-job" id="appliedJobTitle">Loading job details…</p>
+    </header>
+
+    <!-- STATS (read-only, pulled from localStorage) -->
+    <section class="stats">
+      <div class="stat-card">
+        <h3 id="matchScore">—</h3>
+        <p>Match Score</p>
+      </div>
+      <div class="stat-card">
+        <h3 id="skillsMatched">—</h3>
+        <p>Skills Matched</p>
+      </div>
+      <div class="stat-card">
+        <h3 id="skillsMissing">—</h3>
+        <p>Skills Missing</p>
+      </div>
+    </section>
+
+    <!-- FEEDBACK CARD -->
+    <section class="upload-section single-column" style="margin-top:0;">
+      <div class="upload-card feedback-card" style="width:100%; max-width:860px; margin:0 auto;">
+
+        <div
+          style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px; margin-bottom:8px;">
+          <a href="dashboard.html" class="back-btn">← Back to Dashboard</a>
+        </div>
+
+        <div id="candidateMeta" style="margin-bottom:20px;"></div>
+
+        <!-- Dynamic content injected here -->
+        <div id="feedbackContent">
+          <div class="feedback-loading">
+            <div class="spinner"></div>
+            <strong>Generating your AI feedback…</strong>
+            <p>Gemini is analysing your resume against the job description.<br>This usually takes 10–20 seconds.</p>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <script src="../../js/auth.js"></script>
+  <script>
+    // ════════════════════════════════════════════════════════
+    // FEEDBACK PAGE — feedback.js (inline)
+    // ════════════════════════════════════════════════════════
+
+    // Fallback: auth.js should define API, but hardcode if not
+    const API_URL = (typeof API !== "undefined" ? API : null) || "http://localhost:5000";
+
+    function authHdr(isJson = true) {
+      const h = { "Authorization": `Bearer ${localStorage.getItem("tc_token") || ""}` };
+      if (isJson) h["Content-Type"] = "application/json";
+      return h;
+    }
+
+    function esc(s) {
+      return String(s || "")
+        .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
+
+    // ── Simple markdown → HTML (handles ## headers, bullet points, bold) ──────
+    function renderMarkdown(text) {
+      if (!text) return "";
+      return text
+        // ## headings
+        .replace(/^##\s+(.+)$/gm, "<strong style='display:block;margin:12px 0 6px;font-size:14px;color:#0b2540;'>$1</strong>")
+        // ### headings
+        .replace(/^###\s+(.+)$/gm, "<strong style='display:block;margin:10px 0 4px;font-size:13px;color:#1e3a5f;'>$1</strong>")
+        // **bold**
+        .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+        // bullet points
+        .replace(/^\s*[-*]\s+(.+)$/gm, "<li>$1</li>")
+        // wrap consecutive <li> groups in <ul>
+        .replace(/(<li>[\s\S]*?<\/li>)(?=\s*<li>|$)/g, (match) => match)
+        // line breaks
+        .replace(/\n\n/g, "<br><br>")
+        .replace(/\n/g, "<br>");
+    }
+
+    // Wrap <li> runs in <ul>
+    function wrapLists(html) {
+      return html.replace(/(<li>(?:.*?)<\/li>(?:\s*<li>(?:.*?)<\/li>)*)/gs,
+        match => `<ul style="padding-left:18px;margin:8px 0;">${match}</ul>`);
+    }
+
+    // ── Extract sections from raw Gemini text ─────────────────────────────────
+    // The backend prompt instructs Gemini to use ## Skills, ## Experience, ## General
+    // We split on those headers; anything before the first header goes into general.
+    function extractSections(rawText) {
+      const sections = { skills: "", experience: "", general: "" };
+
+      // Try to split on known headers (case-insensitive)
+      const skillsMatch = rawText.match(/##\s*(?:skills?|skill\s+analysis)[^\n]*/i);
+      const experienceMatch = rawText.match(/##\s*(?:experience?|work\s+experience)[^\n]*/i);
+      const generalMatch = rawText.match(/##\s*(?:general|market|overall|recommendation)[^\n]*/i);
+
+      const indices = [];
+      if (skillsMatch) indices.push({ key: "skills", idx: rawText.indexOf(skillsMatch[0]), header: skillsMatch[0] });
+      if (experienceMatch) indices.push({ key: "experience", idx: rawText.indexOf(experienceMatch[0]), header: experienceMatch[0] });
+      if (generalMatch) indices.push({ key: "general", idx: rawText.indexOf(generalMatch[0]), header: generalMatch[0] });
+
+      indices.sort((a, b) => a.idx - b.idx);
+
+      if (indices.length === 0) {
+        // No structured headers — split roughly into thirds
+        const lines = rawText.split("\n").filter(l => l.trim());
+        const third = Math.ceil(lines.length / 3);
+        sections.skills = lines.slice(0, third).join("\n");
+        sections.experience = lines.slice(third, third * 2).join("\n");
+        sections.general = lines.slice(third * 2).join("\n");
+        return sections;
+      }
+
+      for (let i = 0; i < indices.length; i++) {
+        const start = indices[i].idx + indices[i].header.length;
+        const end = i + 1 < indices.length ? indices[i + 1].idx : rawText.length;
+        sections[indices[i].key] = rawText.slice(start, end).trim();
+      }
+
+      // Anything left over that wasn't caught by a header
+      const firstIdx = indices[0].idx;
+      if (firstIdx > 0) {
+        const preamble = rawText.slice(0, firstIdx).trim();
+        if (preamble) sections.general = preamble + "\n\n" + sections.general;
+      }
+
+      return sections;
+    }
+
+    function buildFeedbackHTML(sections) {
+      const makeSection = (iconClass, emoji, title, content) => {
+        const html = wrapLists(renderMarkdown(content || "No information available."));
+        return `
+      <div class="feedback-section">
+        <div class="section-label">
+          <div class="section-icon ${iconClass}">${emoji}</div>
+          ${esc(title)}
+        </div>
+        <div>${html}</div>
+      </div>`;
+      };
+
+      return makeSection("icon-skills", "🛠️", "Skills Analysis", sections.skills)
+        + makeSection("icon-experience", "💼", "Experience &amp; Background", sections.experience)
+        + makeSection("icon-general", "🌐", "Market Outlook &amp; Recommendations", sections.general);
+    }
+
+    // ── Update stat cards from localStorage ───────────────────────────────────
+    function renderStats() {
+      const analysis = JSON.parse(localStorage.getItem("resumeAnalysis") || "null");
+      const job = JSON.parse(localStorage.getItem("selectedJob") || "null");
+      if (!analysis || !job) return;
+
+      const resumeSkills = (analysis?.parsed_content?.skills || []).map(s => s.toLowerCase());
+      const jobSkills = Array.isArray(job?.skills)
+        ? job.skills.map(s => s.toLowerCase())
+        : (job?.skills || "").split(",").map(s => s.trim().toLowerCase()).filter(Boolean);
+
+      const matched = jobSkills.filter(s => resumeSkills.includes(s));
+      const missing = jobSkills.filter(s => !resumeSkills.includes(s));
+      const score = jobSkills.length ? Math.round((matched.length / jobSkills.length) * 100) : 0;
+
+      const el = id => document.getElementById(id);
+      if (el("matchScore")) el("matchScore").textContent = jobSkills.length ? `${score}%` : "—";
+      if (el("skillsMatched")) el("skillsMatched").textContent = matched.length || "—";
+      if (el("skillsMissing")) el("skillsMissing").textContent = missing.length || "—";
+    }
+
+    // ── Main: fetch feedback from backend ─────────────────────────────────────
+    async function loadFeedback() {
+      const contentEl = document.getElementById("feedbackContent");
+      const metaEl = document.getElementById("candidateMeta");
+
+      // Guard: must be logged in
+      if (!localStorage.getItem("tc_token")) {
+        window.location.href = "../../pages/auth/candidate-login.html";
+        return;
+      }
+
+      const analysis = JSON.parse(localStorage.getItem("resumeAnalysis") || "null");
+      const job = JSON.parse(localStorage.getItem("selectedJob") || "null");
+
+      // Update navbar job title
+      const titleEl = document.getElementById("appliedJobTitle");
+      if (titleEl) {
+        titleEl.textContent = job
+          ? `Applied for: ${job.title} at ${job.company || ""}`
+          : "No job selected.";
+      }
+
+      // Render stats
+      renderStats();
+
+      // Show candidate name + score pill
+      if (analysis?.parsed_content?.name) {
+        const score = analysis?.analysis?.score;
+        metaEl.innerHTML = `
+      <span class="candidate-tag">👤 ${esc(analysis.parsed_content.name)}</span>
+      ${score !== undefined ? `<span class="score-pill">Match: ${score}%</span>` : ""}
+    `;
+      }
+
+      // Guard: must have resume data
+      if (!analysis || !analysis.parsed_content) {
+        contentEl.innerHTML = `
+      <div class="feedback-error">
+        <p>⚠️ No resume analysis found.</p>
+        <p>Please go back to the dashboard, upload your resume, and click "Analyze Resume".</p>
+        <a href="dashboard.html" class="back-btn" style="margin-top:16px;display:inline-flex;">← Back to Dashboard</a>
+      </div>`;
+        return;
+      }
+
+      // Build job description string for the API
+      const jobDescription = job
+        ? `${job.title || ""} ${job.description || ""} Required skills: ${Array.isArray(job.skills) ? job.skills.join(", ") : (job.skills || "")
+        }`
+        : "";
+
+      try {
+        const res = await fetch(`${API_URL}/api/generate_feedback`, {
+          method: "POST",
+          headers: authHdr(),
+          body: JSON.stringify({
+            resume_data: analysis,
+            job_description: jobDescription,
+          })
+        });
+        const data = await res.json();
+
+        if (!res.ok || data.error) {
+          throw new Error(data.error || "Feedback generation failed.");
+        }
+
+        const sections = extractSections(data.feedback || "");
+        contentEl.innerHTML = buildFeedbackHTML(sections);
+
+        // Add regenerate button below the feedback
+        const regenBtn = document.createElement("button");
+        regenBtn.textContent = "🔄 Regenerate Feedback";
+        regenBtn.className = "back-btn";
+        regenBtn.style.cssText = "margin-top:20px; background:#0b2540; color:#fff; display:block; width:100%; text-align:center; padding:12px;";
+        regenBtn.addEventListener("click", () => {
+          contentEl.innerHTML = `<div class="feedback-loading"><div class="spinner"></div><strong>Regenerating your AI feedback…</strong><p>This usually takes 10–20 seconds.</p></div>`;
+          regenBtn.remove();
+          loadFeedback();
+        });
+        contentEl.appendChild(regenBtn);
+
+      } catch (err) {
+        contentEl.innerHTML = `
+      <div class="feedback-error">
+        <p>❌ ${esc(err.message || "Could not generate feedback.")}</p>
+        <p>Please try going back and analyzing again.</p>
+        <a href="dashboard.html" class="back-btn" style="margin-top:16px;display:inline-flex;">← Back to Dashboard</a>
+      </div>`;
+      }
+    }
+
+    // ── Init ──────────────────────────────────────────────────────────────────
+    document.addEventListener("DOMContentLoaded", () => {
+      const logoutBtn = document.getElementById("logoutBtn");
+      if (logoutBtn) {
+        logoutBtn.addEventListener("click", e => { e.preventDefault(); logout(); });
+      }
+      loadFeedback();
+    });
+  </script>
+</body>
+
+</html>

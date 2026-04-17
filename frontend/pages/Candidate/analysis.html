@@ -65,7 +65,10 @@
       <h1>Resume Analysis</h1>
       <p class="subtitle" id="analysisSubtitle">AI-powered analysis of your resume</p>
     </div>
-    <a href="detailed-analysis.html" class="suggestion-btn">View Suggestions →</a>
+    <div style="display: flex; gap: 10px;">
+      <a href="feedback.html" class="suggestion-btn" style="background:#0f172a; color:white; border:none;">AI Feedback ✨</a>
+      <a href="detailed-analysis.html" class="suggestion-btn">View Suggestions →</a>
+    </div>
   </div>
  
   <!-- PARSED RESUME -->
@@ -104,14 +107,6 @@
     <div id="missingSkills" class="tags" style="margin-top:8px;"></div>
   </section>
  
-  <!-- AI FEEDBACK -->
-  <section class="feedback-section">
-    <h2>🤖 AI Analysis & Suggestions</h2>
-    <p class="sub" id="feedbackSub">Personalized AI feedback on your resume</p>
-    <div class="feedback-body" id="feedbackBody">
-      <span class="empty-msg">No AI feedback yet. Click "Analyze Resume" on your dashboard.</span>
-    </div>
-  </section>
  
 </div>
  
@@ -193,21 +188,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
  
-  // ── AI Feedback ───────────────────────────────────────────────────────
-  if (feedback) {
-    const feedbackEl = document.getElementById("feedbackBody");
-    // Format markdown-style headers
-    feedbackEl.innerHTML = feedback
-      .replace(/## (.+)/g, "<strong style='font-size:16px;color:#0b2540;display:block;margin:16px 0 8px;'>$1</strong>")
-      .replace(/\* (.+)/g, "• $1<br>")
-      .replace(/\n/g, "<br>");
- 
-    if (job) {
-      document.getElementById("feedbackSub").textContent =
-        `Personalized AI feedback compared against: ${job.title}`;
-    }
-  }
- 
+
   // Logout
   const lb = document.getElementById("logoutBtn");
   if (lb) lb.addEventListener("click", e => { e.preventDefault(); logout(); });
