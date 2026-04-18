@@ -169,13 +169,30 @@ async function loadApplicants() {
 
       const topSkills = (candidate.skills || []).slice(0, 4).join(", ") || "N/A";
 
+      const resumeSkills = (candidate.skills || []).map(s => s.trim().toLowerCase());
+      const jobSkills = Array.isArray(data.job?.skills)
+        ? data.job.skills.map(s => s.trim().toLowerCase())
+        : (data.job?.skills || "").split(",").map(s => s.trim().toLowerCase()).filter(Boolean);
+
+      const matched = [];
+      const missing = [];
+      jobSkills.forEach(js => {
+        const isMatch = resumeSkills.some(rs => rs.includes(js) || js.includes(rs));
+        if (isMatch) matched.push(js);
+        else missing.push(js);
+      });
+
       const div = document.createElement("div");
       div.className = "applicant-card";
       div.innerHTML = `
         <div class="applicant-info">
           <h3>#${index + 1} · ${escHtml(candidate.name || "Unknown")}</h3>
           <p>Email: ${escHtml(candidate.email || "N/A")}</p>
-          <p>Skills: ${escHtml(topSkills)}</p>
+          <p><strong>Candidate Skills:</strong> ${escHtml(topSkills)}</p>
+          <div style="margin-top: 8px; font-size: 13px; color: #475569;">
+            <p><strong style="color: #16a34a;">Matched:</strong> ${matched.length ? escHtml(matched.join(", ")) : "None"}</p>
+            <p><strong style="color: #dc2626;">Missing:</strong> ${missing.length ? escHtml(missing.join(", ")) : "None"}</p>
+          </div>
         </div>
 
         <div class="applicant-score">

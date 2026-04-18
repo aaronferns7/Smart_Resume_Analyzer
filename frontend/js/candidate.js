@@ -294,22 +294,30 @@ function wireAnalyzeButton() {
 // HELPERS
 // ════════════════════════════════════════════════════════
 function updateStats(data, job) {
-  const resumeSkills = (data?.parsed_content?.skills || [])
-    .map(s => s.toLowerCase());
-  const jobSkills = Array.isArray(job?.skills)
-    ? job.skills.map(s => s.toLowerCase())
-    : (job?.skills || "").split(",")
-      .map(s => s.trim().toLowerCase()).filter(Boolean);
+  if (!data || !job) return;
 
-  const matched = jobSkills.filter(s => resumeSkills.includes(s));
-  const missing = jobSkills.filter(s => !resumeSkills.includes(s));
-  const score = jobSkills.length
-    ? Math.round((matched.length / jobSkills.length) * 100) : 0;
+  const resumeSkills = (data?.parsed_content?.skills || []).map(s => s.trim().toLowerCase());
+  const jobSkills = Array.isArray(job?.skills)
+    ? job.skills.map(s => s.trim().toLowerCase())
+    : (job?.skills || "").split(",").map(s => s.trim().toLowerCase()).filter(Boolean);
+
+  const matched = [];
+  const missing = [];
+  jobSkills.forEach(js => {
+    const isMatch = resumeSkills.some(rs => rs.includes(js) || js.includes(rs));
+    if (isMatch) matched.push(js);
+    else missing.push(js);
+  });
+
+  let score = data?.score !== undefined ? data.score : 0;
+  if (!score && jobSkills.length) {
+    score = Math.round((matched.length / jobSkills.length) * 100);
+  }
 
   const el = id => document.getElementById(id);
-  if (el("matchScore")) el("matchScore").textContent = jobSkills.length ? `${score}%` : "—";
-  if (el("skillsMatched")) el("skillsMatched").textContent = matched.length || "—";
-  if (el("skillsMissing")) el("skillsMissing").textContent = missing.length || "—";
+  if (el("matchScore")) el("matchScore").textContent = `${score}%`;
+  if (el("skillsMatched")) el("skillsMatched").textContent = matched.length.toString();
+  if (el("skillsMissing")) el("skillsMissing").textContent = missing.length.toString();
 }
 
 // ════════════════════════════════════════════════════════

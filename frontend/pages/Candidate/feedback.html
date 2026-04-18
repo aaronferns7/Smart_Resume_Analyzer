@@ -210,21 +210,7 @@
       <p class="applied-job" id="appliedJobTitle">Loading job details…</p>
     </header>
 
-    <!-- STATS (read-only, pulled from localStorage) -->
-    <section class="stats">
-      <div class="stat-card">
-        <h3 id="matchScore">—</h3>
-        <p>Match Score</p>
-      </div>
-      <div class="stat-card">
-        <h3 id="skillsMatched">—</h3>
-        <p>Skills Matched</p>
-      </div>
-      <div class="stat-card">
-        <h3 id="skillsMissing">—</h3>
-        <p>Skills Missing</p>
-      </div>
-    </section>
+    <!-- STATS (Removed as per request) -->
 
     <!-- FEEDBACK CARD -->
     <section class="upload-section single-column" style="margin-top:0;">
@@ -358,25 +344,34 @@
         + makeSection("icon-general", "🌐", "Market Outlook &amp; Recommendations", sections.general);
     }
 
-    // ── Update stat cards from localStorage ───────────────────────────────────
     function renderStats() {
       const analysis = JSON.parse(localStorage.getItem("resumeAnalysis") || "null");
       const job = JSON.parse(localStorage.getItem("selectedJob") || "null");
       if (!analysis || !job) return;
 
-      const resumeSkills = (analysis?.parsed_content?.skills || []).map(s => s.toLowerCase());
+      const resumeSkills = (analysis?.parsed_content?.skills || []).map(s => s.trim().toLowerCase());
       const jobSkills = Array.isArray(job?.skills)
-        ? job.skills.map(s => s.toLowerCase())
+        ? job.skills.map(s => s.trim().toLowerCase())
         : (job?.skills || "").split(",").map(s => s.trim().toLowerCase()).filter(Boolean);
 
-      const matched = jobSkills.filter(s => resumeSkills.includes(s));
-      const missing = jobSkills.filter(s => !resumeSkills.includes(s));
-      const score = jobSkills.length ? Math.round((matched.length / jobSkills.length) * 100) : 0;
+      const matched = [];
+      const missing = [];
+      jobSkills.forEach(js => {
+        // Smarter substring match
+        const isMatch = resumeSkills.some(rs => rs.includes(js) || js.includes(rs));
+        if (isMatch) matched.push(js);
+        else missing.push(js);
+      });
+
+      let score = analysis?.score !== undefined ? analysis.score : 0;
+      if (!score && jobSkills.length) {
+        score = Math.round((matched.length / jobSkills.length) * 100);
+      }
 
       const el = id => document.getElementById(id);
-      if (el("matchScore")) el("matchScore").textContent = jobSkills.length ? `${score}%` : "—";
-      if (el("skillsMatched")) el("skillsMatched").textContent = matched.length || "—";
-      if (el("skillsMissing")) el("skillsMissing").textContent = missing.length || "—";
+      if (el("matchScore")) el("matchScore").textContent = `${score}%`;
+      if (el("skillsMatched")) el("skillsMatched").textContent = matched.length.toString();
+      if (el("skillsMissing")) el("skillsMissing").textContent = missing.length.toString();
     }
 
     // ── Main: fetch feedback from backend ─────────────────────────────────────

@@ -10,6 +10,16 @@ import logging
 from datetime import datetime, timedelta
 from functools import wraps
 
+# ── Load .env FIRST — before any other imports that may read env vars ──────────
+from dotenv import load_dotenv
+load_dotenv()
+
+# Normalise key names: support both GEMINI_API_KEY and GOOGLE_API_KEY
+_api_key = os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY", "")
+if _api_key:
+    os.environ["GEMINI_API_KEY"]  = _api_key
+    os.environ["GOOGLE_API_KEY"]  = _api_key   # LangChain reads this name
+
 import bcrypt
 import jwt
 from flask import Flask, request, jsonify
@@ -545,9 +555,25 @@ def get_applicants(job_id):
             return jsonify({"error": "Job not found or access denied."}), 404
 
         job_dict = dict(job)
+        if not job_dict.get("skills") and job_dict.get("description"):
+            try:
+                import os
+                from langchain_google_genai import ChatGoogleGenerativeAI
+                api_key = os.environ.get("GOOGLE_API_KEY")
+                model = ChatGoogleGenerativeAI(model="gemini-2.5-flash", temperature=0.1, google_api_key=api_key)
+                prompt = f"Extract a brief comma-separated list of ONLY the core required technical skills from this job description. No extra text, no bullet points, just a single comma-separated string. Job Description: {job_dict['description']}"
+                skills_str = model.invoke(prompt).content.replace('"', '').strip()
+                if skills_str:
+                    logger.info(f"Auto-extracted skills for job {job_id}: {skills_str}")
+                    job_dict["skills"] = skills_str
+                    conn.execute("UPDATE jobs SET skills = ? WHERE id = ?", (skills_str, job_id))
+                    conn.commit()
+            except Exception as e:
+                logger.warning(f"Failed to auto-extract job skills: {e}")
+
         jd_text  = (
             f"{job_dict['title']} {job_dict['description']} "
-            f"Required skills: {job_dict['skills']}"
+            f"Required skills: {job_dict.get('skills', '')}"
         )
 
         # Get candidate IDs + preferences who applied to this job from SQL
@@ -619,8 +645,28 @@ def get_applicants(job_id):
 @token_required
 def generate_feedback():
     try:
+        import google.generativeai as genai
         from langchain_google_genai import ChatGoogleGenerativeAI
         from langchain_core.prompts import PromptTemplate
+
+        # ── Resolve API key robustly ───────────────────────────────────────
+        google_api_key = (
+            os.environ.get("GEMINI_API_KEY") or
+            os.environ.get("GOOGLE_API_KEY") or
+            os.environ.get("GOOGLE_GENERATIVEAI_API_KEY", "")
+        )
+        if not google_api_key:
+            logger.error("❌ No Google API key found in environment.")
+            return jsonify({
+                "error": (
+                    "Server configuration error: Google API key is not set. "
+                    "Add GEMINI_API_KEY=your_key to your .env file and restart the server."
+                )
+            }), 500
+
+        # Configure the underlying google-generativeai SDK as well
+        genai.configure(api_key=google_api_key)
+        logger.info(f"✅ Gemini API key loaded (starts with: {google_api_key[:8]}...)")
 
         data            = request.get_json(silent=True) or {}
         resume_data     = data.get("resume_data")
@@ -633,10 +679,6 @@ def generate_feedback():
         name       = parsed.get("name",       "Candidate")
         skills     = parsed.get("skills",     [])
         experience = parsed.get("experience", [])
-
-        # ── Structured 3-section prompt ────────────────────────────────────
-        # Each section uses a ## header so the frontend can split them cleanly.
-        # Minimum 3 paragraphs per section is explicitly required.
 
         if job_description:
             template = (
@@ -651,11 +693,14 @@ def generate_feedback():
                 "INSTRUCTIONS — You MUST structure your entire response using exactly these three "
                 "sections, in this order. Keep your points SHORT, DIRECT, and use BULLET POINTS.\n\n"
                 "## Skills Gap\n"
-                "Bullet points comparing the candidate's skills against the job requirements. Point out any missing skills and what they should learn.\n\n"
+                "Bullet points comparing the candidate's skills against the job requirements. "
+                "Point out any missing skills and what they should learn.\n\n"
                 "## Experience & Courses Recommended\n"
-                "Bullet points evaluating the candidate's experience for the role. Suggest concrete courses or projects.\n\n"
+                "Bullet points evaluating the candidate's experience for the role. "
+                "Suggest concrete courses or projects.\n\n"
                 "## General & Market Analysis\n"
-                "Bullet points providing a short, point-to-point market analysis of how competitive they are right now, along with any other concise advice.\n"
+                "Bullet points providing a short, point-to-point market analysis of how competitive "
+                "they are right now, along with any other concise advice.\n"
             )
             input_vars = ["name", "skills", "experience", "job_description"]
         else:
@@ -670,15 +715,24 @@ def generate_feedback():
                 "INSTRUCTIONS — You MUST structure your entire response using exactly these three "
                 "sections, in this order. Keep your points SHORT, DIRECT, and use BULLET POINTS.\n\n"
                 "## Skills Gap\n"
-                "Bullet points evaluating the candidate's skills against current market demand. Point out any missing skills and what they should learn.\n\n"
+                "Bullet points evaluating the candidate's skills against current market demand. "
+                "Point out any missing skills and what they should learn.\n\n"
                 "## Experience & Courses Recommended\n"
-                "Bullet points evaluating the candidate's experience. Suggest concrete courses, projects, or ways to enhance their background.\n\n"
+                "Bullet points evaluating the candidate's experience. "
+                "Suggest concrete courses, projects, or ways to enhance their background.\n\n"
                 "## General & Market Analysis\n"
-                "Bullet points providing a short, point-to-point market analysis of how competitive they are, along with any other concise advice.\n"
+                "Bullet points providing a short, point-to-point market analysis of how competitive "
+                "they are, along with any other concise advice.\n"
             )
             input_vars = ["name", "skills", "experience"]
 
-        model  = ChatGoogleGenerativeAI(model="gemini-2.5-flash", temperature=0.7, transport="rest")
+        # ── Instantiate model — pass key explicitly so LangChain never ────
+        # ── falls back to OAuth2 / Application Default Credentials       ────
+        model = ChatGoogleGenerativeAI(
+            model="gemini-2.5-flash",          # stable GA model — change to gemini-2.5-flash if your key has access
+            temperature=0.7,
+            google_api_key=google_api_key,     # ← explicit key, no env-var guessing
+        )
         prompt = PromptTemplate(template=template, input_variables=input_vars)
         chain  = prompt | model
 
