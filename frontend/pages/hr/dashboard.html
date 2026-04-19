@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <title>HR Dashboard | TalentCortex</title>
@@ -7,232 +8,254 @@
   <link rel="stylesheet" href="../../css/common.css">
   <link rel="stylesheet" href="../../css/hr.css">
   <style>
-    .status-msg          { font-size:13px; margin-top:8px; min-height:18px; }
-    .status-msg.success  { color:#16a34a; }
-    .status-msg.error    { color:#dc2626; }
-    .stat-card h3        { font-size:28px; color:#0b2540; }
-    .stat-card p         { color:#64748b; margin-top:4px; }
+    .status-msg {
+      font-size: 13px;
+      margin-top: 8px;
+      min-height: 18px;
+    }
+
+    .status-msg.success {
+      color: #16a34a;
+    }
+
+    .status-msg.error {
+      color: #dc2626;
+    }
+
+    .stat-card h3 {
+      font-size: 28px;
+      color: #0b2540;
+    }
+
+    .stat-card p {
+      color: #64748b;
+      margin-top: 4px;
+    }
   </style>
 </head>
+
 <body class="hr-page">
 
-<!-- NAVBAR -->
-<nav class="hr-navbar">
-  <div class="nav-inner">
-    <div class="nav-left"><h2>TalentCortex HR</h2></div>
-    <div class="nav-right">
-      <a href="dashboard.html"   class="logout-btn">Dashboard</a>
-      <a href="../../index.html" class="logout-btn" id="logoutBtn">Logout</a>
+  <!-- NAVBAR -->
+  <nav class="hr-navbar">
+    <div class="nav-inner">
+      <div class="nav-left">
+        <h2>TalentCortex HR</h2>
+      </div>
+      <div class="nav-right">
+        <a href="dashboard.html" class="logout-btn">Dashboard</a>
+        <a href="../../index.html" class="logout-btn" id="logoutBtn">Logout</a>
+      </div>
     </div>
-  </div>
-</nav>
+  </nav>
 
-<main class="container">
+  <main class="container">
 
-  <header class="page-header">
-    <h1>HR Dashboard</h1>
-    <p>Post new jobs and manage applications</p>
-  </header>
+    <header class="page-header">
+      <h1>HR Dashboard</h1>
+      <p>Post new jobs and manage applications</p>
+    </header>
 
-  <!-- STATS -->
-  <section class="stats">
-    <div class="stat-card">
-      <h3 id="totalJobs">—</h3>
-      <p>Jobs Posted</p>
-    </div>
-    <div class="stat-card">
-      <h3 id="totalApplicants">—</h3>
-      <p>Total Applicants</p>
-    </div>
-    <div class="stat-card">
-      <h3 id="avgScore">—</h3>
-      <p>Avg Match Score</p>
-    </div>
-  </section>
+    <!-- STATS -->
+    <section class="stats">
+      <div class="stat-card">
+        <h3 id="totalJobs">—</h3>
+        <p>Jobs Posted</p>
+      </div>
+      <div class="stat-card">
+        <h3 id="totalApplicants">—</h3>
+        <p>Total Applicants</p>
+      </div>
+      <div class="stat-card">
+        <h3 id="avgScore">—</h3>
+        <p>Avg Match Score</p>
+      </div>
+    </section>
 
-  <!-- POST JOB FORM -->
-  <section class="card">
-    <h2>Post New Job</h2>
+    <!-- POST JOB FORM -->
+    <section class="card">
+      <h2>Post New Job</h2>
 
-    <div class="form-group">
-      <label>Job Title</label>
-      <input type="text" id="jobTitle" placeholder="e.g. Software Engineer">
-    </div>
-    <div class="form-group">
-      <label>Company</label>
-      <input type="text" id="company" placeholder="e.g. TechCorp">
-    </div>
-    <div class="form-group">
-      <label>Location</label>
-      <input type="text" id="location" placeholder="e.g. Mumbai">
-    </div>
-    <div class="form-group">
-      <label>Work Mode</label>
-      <select id="workMode">
-        <option value="Remote">Remote</option>
-        <option value="Hybrid">Hybrid</option>
-        <option value="Onsite">Onsite</option>
-      </select>
-    </div>
-    <div class="form-group">
-      <label>Required Skills <span style="color:#64748b;font-size:12px;">(comma separated)</span></label>
-      <input type="text" id="skills" placeholder="React, Node.js, SQL">
-    </div>
-    <div class="form-group">
-      <label>Job Description</label>
-      <textarea id="description" rows="4"
-                placeholder="Describe the role, responsibilities and requirements..."></textarea>
-    </div>
+      <div class="form-group">
+        <label>Job Title</label>
+        <input type="text" id="jobTitle" placeholder="e.g. Software Engineer">
+      </div>
+      <div class="form-group">
+        <label>Company</label>
+        <input type="text" id="company" placeholder="e.g. TechCorp">
+      </div>
+      <div class="form-group">
+        <label>Location</label>
+        <input type="text" id="location" placeholder="e.g. Mumbai">
+      </div>
+      <div class="form-group">
+        <label>Work Mode</label>
+        <select id="workMode">
+          <option value="Remote">Remote</option>
+          <option value="Hybrid">Hybrid</option>
+          <option value="Onsite">Onsite</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Required Skills <span style="color:#64748b;font-size:12px;">(comma separated)</span></label>
+        <input type="text" id="skills" placeholder="React, Node.js, SQL">
+      </div>
+      <div class="form-group">
+        <label>Job Description</label>
+        <textarea id="description" rows="4"
+          placeholder="Describe the role, responsibilities and requirements..."></textarea>
+      </div>
 
-    <button class="primary-btn" id="postJobBtn">Post Job</button>
-    <p class="status-msg" id="postStatus"></p>
-  </section>
+      <button class="primary-btn" id="postJobBtn">Post Job</button>
+      <p class="status-msg" id="postStatus"></p>
+    </section>
 
-  <!-- POSTED JOBS -->
-  <section class="card">
-    <h2>Your Job Listings</h2>
-    <div id="jobList">
-      <p style="color:#64748b;">Loading your jobs…</p>
-    </div>
-  </section>
+    <!-- POSTED JOBS -->
+    <section class="card">
+      <h2>Your Job Listings</h2>
+      <div id="jobList">
+        <p style="color:#64748b;">Loading your jobs…</p>
+      </div>
+    </section>
 
-</main>
+  </main>
 
-<script src="../../js/auth.js"></script>
-<script>
+  <script src="../../js/auth.js"></script>
+  <script>
 
-function authHeaders() {
-  return {
-    "Content-Type":  "application/json",
-    "Authorization": `Bearer ${localStorage.getItem("tc_token") || ""}`
-  };
-}
-
-function setStatus(id, msg, type="") {
-  const el = document.getElementById(id);
-  if (!el) return;
-  el.textContent = msg;
-  el.className   = "status-msg" + (type ? " " + type : "");
-}
-
-function esc(s) {
-  return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
-}
-
-// ── Load HR's jobs ────────────────────────────────────────────────────────
-async function loadMyJobs() {
-  const container = document.getElementById("jobList");
-
-  try {
-    const res  = await fetch(`${API}/api/jobs/mine`, { headers: authHeaders() });
-    const data = await res.json();
-
-    if (!res.ok) {
-      container.innerHTML = `<p style="color:#dc2626;">${data.error || "Failed to load jobs."}</p>`;
-      return;
+    function authHeaders() {
+      return {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${localStorage.getItem("tc_token") || ""}`
+      };
     }
 
-    // Update stat card
-    const jobs = data.jobs || [];
-    document.getElementById("totalJobs").textContent = jobs.length;
-
-    if (jobs.length === 0) {
-      container.innerHTML = `<p style="color:#64748b;">No jobs posted yet. Use the form above.</p>`;
-      return;
+    function setStatus(id, msg, type = "") {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.textContent = msg;
+      el.className = "status-msg" + (type ? " " + type : "");
     }
 
-    container.innerHTML = "";
-    jobs.forEach(job => {
-      const div = document.createElement("div");
-      div.className = "job-card";
-      div.innerHTML = `
+    function esc(s) {
+      return String(s || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
+
+    // ── Load HR's jobs ────────────────────────────────────────────────────────
+    async function loadMyJobs() {
+      const container = document.getElementById("jobList");
+
+      try {
+        const res = await fetch(`${API}/api/jobs/mine`, { headers: authHeaders() });
+        const data = await res.json();
+
+        if (!res.ok) {
+          container.innerHTML = `<p style="color:#dc2626;">${data.error || "Failed to load jobs."}</p>`;
+          return;
+        }
+
+        // Update stat card
+        const jobs = data.jobs || [];
+        document.getElementById("totalJobs").textContent = jobs.length;
+
+        if (jobs.length === 0) {
+          container.innerHTML = `<p style="color:#64748b;">No jobs posted yet. Use the form above.</p>`;
+          return;
+        }
+
+        container.innerHTML = "";
+        jobs.forEach(job => {
+          const div = document.createElement("div");
+          div.className = "job-card";
+          div.innerHTML = `
         <h3>${esc(job.title)}</h3>
         <p><strong>Company:</strong> ${esc(job.company)}</p>
         <p><strong>Location:</strong> ${esc(job.location)} &nbsp;·&nbsp;
            <strong>Mode:</strong> ${esc(job.work_mode || "Onsite")}</p>
         ${job.skills
-          ? `<p><strong>Skills:</strong> ${esc(job.skills)}</p>`
-          : ""}
+              ? `<p><strong>Skills:</strong> ${esc(job.skills)}</p>`
+              : ""}
         <div class="job-actions" style="margin-top:14px;">
           <a href="results.html?job_id=${job.id}" class="primary-btn">
             View Applicants
           </a>
         </div>`;
-      container.appendChild(div);
-    });
+          container.appendChild(div);
+        });
 
-  } catch(err) {
-    container.innerHTML = `
+      } catch (err) {
+        container.innerHTML = `
       <p style="color:#dc2626;">
         Could not load jobs. Is the backend running on port 5000?<br>
         <small>${err.message}</small>
       </p>`;
-  }
-}
-
-// ── Post new job ──────────────────────────────────────────────────────────
-document.getElementById("postJobBtn").addEventListener("click", async () => {
-  const btn   = document.getElementById("postJobBtn");
-  const title = document.getElementById("jobTitle").value.trim();
-  const comp  = document.getElementById("company").value.trim();
-  const loc   = document.getElementById("location").value.trim();
-
-  if (!title || !comp || !loc) {
-    setStatus("postStatus", "Title, company and location are required.", "error");
-    return;
-  }
-
-  btn.disabled    = true;
-  btn.textContent = "Posting…";
-  setStatus("postStatus", "");
-
-  const payload = {
-    title,
-    company:     comp,
-    location:    loc,
-    work_mode:   document.getElementById("workMode").value,
-    skills:      document.getElementById("skills").value.trim(),
-    description: document.getElementById("description").value.trim(),
-  };
-
-  try {
-    const res  = await fetch(`${API}/api/jobs`, {
-      method:  "POST",
-      headers: authHeaders(),
-      body:    JSON.stringify(payload)
-    });
-    const data = await res.json();
-
-    if (res.ok) {
-      setStatus("postStatus", "✅ Job posted successfully!", "success");
-      // Clear form
-      ["jobTitle","company","location","skills","description"]
-        .forEach(id => { document.getElementById(id).value = ""; });
-      document.getElementById("workMode").value = "Remote";
-      await loadMyJobs();
-    } else {
-      setStatus("postStatus", data.error || "Failed to post job.", "error");
+      }
     }
-  } catch(err) {
-    setStatus("postStatus", `Server error: ${err.message}`, "error");
-  } finally {
-    btn.disabled    = false;
-    btn.textContent = "Post Job";
-  }
-});
 
-// ── Logout ────────────────────────────────────────────────────────────────
-document.getElementById("logoutBtn").addEventListener("click", e => {
-  e.preventDefault(); logout();
-});
+    // ── Post new job ──────────────────────────────────────────────────────────
+    document.getElementById("postJobBtn").addEventListener("click", async () => {
+      const btn = document.getElementById("postJobBtn");
+      const title = document.getElementById("jobTitle").value.trim();
+      const comp = document.getElementById("company").value.trim();
+      const loc = document.getElementById("location").value.trim();
 
-// ── Init ─────────────────────────────────────────────────────────────────
-document.addEventListener("DOMContentLoaded", async () => {
-  await loadMyJobs();
-  // Placeholder stats — extend later
-  document.getElementById("totalApplicants").textContent = "—";
-  document.getElementById("avgScore").textContent        = "—";
-});
-</script>
+      if (!title || !comp || !loc) {
+        setStatus("postStatus", "Title, company and location are required.", "error");
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = "Posting…";
+      setStatus("postStatus", "");
+
+      const payload = {
+        title,
+        company: comp,
+        location: loc,
+        work_mode: document.getElementById("workMode").value,
+        skills: document.getElementById("skills").value.trim(),
+        description: document.getElementById("description").value.trim(),
+      };
+
+      try {
+        const res = await fetch(`${API}/api/jobs`, {
+          method: "POST",
+          headers: authHeaders(),
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+
+        if (res.ok) {
+          setStatus("postStatus", "✅ Job posted successfully!", "success");
+          // Clear form
+          ["jobTitle", "company", "location", "skills", "description"]
+            .forEach(id => { document.getElementById(id).value = ""; });
+          document.getElementById("workMode").value = "Remote";
+          await loadMyJobs();
+        } else {
+          setStatus("postStatus", data.error || "Failed to post job.", "error");
+        }
+      } catch (err) {
+        setStatus("postStatus", `Server error: ${err.message}`, "error");
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "Post Job";
+      }
+    });
+
+    // ── Logout ────────────────────────────────────────────────────────────────
+    document.getElementById("logoutBtn").addEventListener("click", e => {
+      e.preventDefault(); logout();
+    });
+
+    // ── Init ─────────────────────────────────────────────────────────────────
+    document.addEventListener("DOMContentLoaded", async () => {
+      await loadMyJobs();
+      // Placeholder stats — extend later
+      document.getElementById("totalApplicants").textContent = "—";
+      document.getElementById("avgScore").textContent = "—";
+    });
+  </script>
 </body>
+
 </html>

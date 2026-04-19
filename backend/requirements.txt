@@ -1,26 +1,28 @@
 # TalentCortex — requirements.txt
 # Install with: pip install -r requirements.txt
-
 # ── Web Framework ──────────────────────────────────────
 flask
 flask-cors
-
 # ── Auth ───────────────────────────────────────────────
 bcrypt
 PyJWT
-
 # ── AI / LLM ───────────────────────────────────────────
 llama-parse
 langchain-google-genai
 langchain-core
 google-generativeai
-
 # ── Vector Database ─────────────────────────────────────
 chromadb
-
 # ── Validation ─────────────────────────────────────────
 pydantic
-
 # ── Utilities ──────────────────────────────────────────
 werkzeug
 numpy
+pandas
+# --- Document Parsing ---
+pypdf
+python-docx
+
+#NLP 
+spacy
+scikit-learn

@@ -22,21 +22,21 @@ document.addEventListener("DOMContentLoaded", () => {
     return;
   }
 
-  const data   = JSON.parse(raw);
+  const data = JSON.parse(raw);
   const parsed = data?.parsed_content || {};
-  const meta   = data?.contact_info   || {};
-  const job    = JSON.parse(localStorage.getItem("selectedJob") || "null");
+  const meta = data?.contact_info || {};
+  const job = JSON.parse(localStorage.getItem("selectedJob") || "null");
 
   // ── Parsed resume preview ─────────────────────────────────────────────────
   container.innerHTML = `
     <div class="parsed-block">
       <h4>Basic Information</h4>
       <ul class="parsed-list">
-        <li><strong>Name:</strong>     ${esc(parsed.name     || "—")}</li>
-        <li><strong>Email:</strong>    ${esc(meta.email      || "—")}</li>
-        <li><strong>Phone:</strong>    ${esc(meta.phone      || "—")}</li>
-        <li><strong>LinkedIn:</strong> ${esc(meta.linkedin   || "—")}</li>
-        <li><strong>GitHub:</strong>   ${esc(meta.github     || "—")}</li>
+        <li><strong>Name:</strong>     ${esc(parsed.name || "—")}</li>
+        <li><strong>Email:</strong>    ${esc(meta.email || "—")}</li>
+        <li><strong>Phone:</strong>    ${esc(meta.phone || "—")}</li>
+        <li><strong>LinkedIn:</strong> ${esc(meta.linkedin || "—")}</li>
+        <li><strong>GitHub:</strong>   ${esc(meta.github || "—")}</li>
       </ul>
     </div>
 
@@ -58,13 +58,13 @@ document.addEventListener("DOMContentLoaded", () => {
   if (job) {
     const resumeSkills = (parsed.skills || []).map(s => s.toLowerCase());
     const rawJobSkills = job.skills || [];
-    const jobSkills    = Array.isArray(rawJobSkills)
+    const jobSkills = Array.isArray(rawJobSkills)
       ? rawJobSkills.map(s => s.toLowerCase())
       : rawJobSkills.split(",").map(s => s.trim().toLowerCase());
 
     const matched = jobSkills.filter(s => resumeSkills.includes(s));
     const missing = jobSkills.filter(s => !resumeSkills.includes(s));
-    const score   = jobSkills.length
+    const score = jobSkills.length
       ? Math.round((matched.length / jobSkills.length) * 100)
       : 0;
 

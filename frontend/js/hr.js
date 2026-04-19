@@ -8,7 +8,7 @@ const API_BASE = "http://localhost:5000";
 
 function authHeaders() {
   return {
-    "Content-Type":  "application/json",
+    "Content-Type": "application/json",
     "Authorization": `Bearer ${localStorage.getItem("tc_token") || ""}`
   };
 }
@@ -30,24 +30,24 @@ async function initHRDashboard() {
     jobForm.addEventListener("submit", async (e) => {
       e.preventDefault();
 
-      const submitBtn  = jobForm.querySelector("[type='submit'], .primary-btn");
-      const origText   = submitBtn?.textContent || "Post Job";
+      const submitBtn = jobForm.querySelector("[type='submit'], .primary-btn");
+      const origText = submitBtn?.textContent || "Post Job";
       if (submitBtn) { submitBtn.textContent = "Posting…"; submitBtn.disabled = true; }
 
       const payload = {
-        title:       document.getElementById("jobTitle")?.value   || "",
-        company:     document.getElementById("company")?.value    || "",
-        location:    document.getElementById("location")?.value   || "",
-        work_mode:   document.getElementById("workMode")?.value   || "Onsite",
-        skills:      document.getElementById("skills")?.value     || "",
+        title: document.getElementById("jobTitle")?.value || "",
+        company: document.getElementById("company")?.value || "",
+        location: document.getElementById("location")?.value || "",
+        work_mode: document.getElementById("workMode")?.value || "Onsite",
+        skills: document.getElementById("skills")?.value || "",
         description: document.getElementById("description")?.value || "",
       };
 
       try {
-        const res  = await fetch(`${API_BASE}/api/jobs`, {
-          method:  "POST",
+        const res = await fetch(`${API_BASE}/api/jobs`, {
+          method: "POST",
           headers: authHeaders(),
-          body:    JSON.stringify(payload)
+          body: JSON.stringify(payload)
         });
         const data = await res.json();
 
@@ -72,7 +72,7 @@ async function loadMyJobs(container) {
   container.innerHTML = `<p style="color:#64748b;">Loading your job listings…</p>`;
 
   try {
-    const res  = await fetch(`${API_BASE}/api/jobs/mine`, { headers: authHeaders() });
+    const res = await fetch(`${API_BASE}/api/jobs/mine`, { headers: authHeaders() });
     const data = await res.json();
 
     if (!res.ok) {
@@ -115,7 +115,7 @@ async function loadApplicants() {
   if (!list) return;
 
   const params = new URLSearchParams(window.location.search);
-  const jobId  = params.get("job_id");
+  const jobId = params.get("job_id");
 
   if (!jobId) {
     list.innerHTML = `
@@ -129,7 +129,7 @@ async function loadApplicants() {
   list.innerHTML = `<p style="color:#64748b;">Loading applicants and computing AI match scores…</p>`;
 
   try {
-    const res  = await fetch(`${API_BASE}/api/applicants/${jobId}`, { headers: authHeaders() });
+    const res = await fetch(`${API_BASE}/api/applicants/${jobId}`, { headers: authHeaders() });
     const data = await res.json();
 
     if (!res.ok) {
@@ -165,7 +165,7 @@ async function loadApplicants() {
     data.matches.forEach((candidate, index) => {
       const scoreColor =
         candidate.score >= 75 ? "#16a34a" :
-        candidate.score >= 50 ? "#f59e0b" : "#dc2626";
+          candidate.score >= 50 ? "#f59e0b" : "#dc2626";
 
       const topSkills = (candidate.skills || []).slice(0, 4).join(", ") || "N/A";
 
@@ -202,12 +202,12 @@ async function loadApplicants() {
 
         <div class="applicant-actions">
           ${candidate.resume_path
-            ? `<button class="secondary-btn"
+          ? `<button class="secondary-btn"
                  onclick="window.open('${API_BASE}/uploads/${encodeURIComponent(candidate.resume_path.split('/').pop())}', '_blank')">
                  View Resume
                </button>`
-            : `<button class="secondary-btn" disabled style="opacity:0.5;">No Resume</button>`
-          }
+          : `<button class="secondary-btn" disabled style="opacity:0.5;">No Resume</button>`
+        }
         </div>`;
 
       list.appendChild(div);

@@ -26,7 +26,8 @@ body {
   left: 0;
   right: 0;
   z-index: 999;
-  padding: 8px 0; /* inner container controls spacing */
+  padding: 8px 0;
+  /* inner container controls spacing */
 }
 
 .nav-inner {
@@ -69,7 +70,7 @@ body {
 
 .nav-links a.active {
   color: #3b82f6;
-  background: rgba(59,130,246,0.08);
+  background: rgba(59, 130, 246, 0.08);
 }
 
 .auth-buttons {
@@ -114,4 +115,6 @@ body {
   font-weight: 600;
 }
 
-.dashboard-btn:hover { opacity: 0.95; }
+.dashboard-btn:hover {
+  opacity: 0.95;
+}

@@ -9,11 +9,11 @@ const API = "http://localhost:5000";
 // ────────────────────────────────────────────
 // TOKEN HELPERS
 // ────────────────────────────────────────────
-function getToken()  { return localStorage.getItem("tc_token") || ""; }
-function getUser()   { return JSON.parse(localStorage.getItem("tc_user") || "null"); }
+function getToken() { return localStorage.getItem("tc_token") || ""; }
+function getUser() { return JSON.parse(localStorage.getItem("tc_user") || "null"); }
 function authHeaders() {
   return {
-    "Content-Type":  "application/json",
+    "Content-Type": "application/json",
     "Authorization": `Bearer ${getToken()}`
   };
 }
@@ -31,7 +31,7 @@ function logout() {
  * Redirects to login if no token or wrong role.
  */
 function requireAuth(role) {
-  const user  = getUser();
+  const user = getUser();
   const token = getToken();
   if (!user || !token) {
     window.location.href =
@@ -65,17 +65,17 @@ function showAuthError(msg) {
 // REGISTER
 // ────────────────────────────────────────────
 async function register(role) {
-  const email    = document.querySelector("input[type='email']")?.value?.trim();
+  const email = document.querySelector("input[type='email']")?.value?.trim();
   const password = document.querySelector("input[type='password']")?.value?.trim();
-  const name     = document.querySelector("input[name='name']")?.value?.trim() || "";
+  const name = document.querySelector("input[name='name']")?.value?.trim() || "";
 
   if (!email || !password) { showAuthError("Email and password are required."); return; }
 
   try {
-    const res  = await fetch(`${API}/api/auth/register`, {
-      method:  "POST",
+    const res = await fetch(`${API}/api/auth/register`, {
+      method: "POST",
       headers: { "Content-Type": "application/json" },
-      body:    JSON.stringify({ email, password, role, name })
+      body: JSON.stringify({ email, password, role, name })
     });
     const data = await res.json();
 
@@ -91,16 +91,16 @@ async function register(role) {
 // LOGIN
 // ────────────────────────────────────────────
 async function login(role) {
-  const email    = document.querySelector("input[type='email']")?.value?.trim();
+  const email = document.querySelector("input[type='email']")?.value?.trim();
   const password = document.querySelector("input[type='password']")?.value?.trim();
 
   if (!email || !password) { showAuthError("Email and password are required."); return; }
 
   try {
-    const res  = await fetch(`${API}/api/auth/login`, {
-      method:  "POST",
+    const res = await fetch(`${API}/api/auth/login`, {
+      method: "POST",
       headers: { "Content-Type": "application/json" },
-      body:    JSON.stringify({ email, password, role })
+      body: JSON.stringify({ email, password, role })
     });
     const data = await res.json();
 
@@ -114,9 +114,9 @@ async function login(role) {
 
 function _storeAndRedirect(data, role) {
   localStorage.setItem("tc_token", data.token);
-  localStorage.setItem("tc_user",  JSON.stringify({
-    role:  data.role,
-    name:  data.name,
+  localStorage.setItem("tc_user", JSON.stringify({
+    role: data.role,
+    name: data.name,
     email: data.email || ""
   }));
 
@@ -139,7 +139,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // Show first letter of user name in avatar
-  const user   = getUser();
+  const user = getUser();
   const avatar = document.querySelector(".avatar");
   if (user && avatar) {
     avatar.textContent = (user.name || user.email || "U")[0].toUpperCase();

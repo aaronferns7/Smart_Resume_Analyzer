@@ -266,7 +266,7 @@ function wireAnalyzeButton() {
           body: JSON.stringify(bodyReq)
         });
         const data = await res.json();
-        
+
         if (res.ok && data.parsed_content) {
           localStorage.setItem("resumeAnalysis", JSON.stringify(data));
           analysisObj = data;

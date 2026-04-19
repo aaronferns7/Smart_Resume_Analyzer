@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <title>Browse Jobs | TalentCortex</title>
@@ -10,88 +11,90 @@
 
 <body class="candidate-page">
 
-<nav class="candidate-navbar">
-  <div class="nav-inner">
-    <div class="nav-left"><h2>TalentCortex</h2></div>
-    <div class="nav-right">
-      <a href="jobs.html"        class="logout-btn">Browse Jobs</a>
-      <a href="dashboard.html"   class="logout-btn">Dashboard</a>
-      <a href="../../index.html" class="logout-btn" id="logoutBtn">Logout</a>
+  <nav class="candidate-navbar">
+    <div class="nav-inner">
+      <div class="nav-left">
+        <h2>TalentCortex</h2>
+      </div>
+      <div class="nav-right">
+        <a href="jobs.html" class="logout-btn">Browse Jobs</a>
+        <a href="dashboard.html" class="logout-btn">Dashboard</a>
+        <a href="../../index.html" class="logout-btn" id="logoutBtn">Logout</a>
+      </div>
     </div>
-  </div>
-</nav>
+  </nav>
 
-<main class="container">
-  <header class="page-header">
-    <h1>Browse Jobs</h1>
-    <p>Click "View Details" to read the full job description before applying</p>
-  </header>
+  <main class="container">
+    <header class="page-header">
+      <h1>Browse Jobs</h1>
+      <p>Click "View Details" to read the full job description before applying</p>
+    </header>
 
-  <!-- Shown only when backend is unreachable -->
-  <div id="backendBanner" style="display:none; background:#fee2e2; border:1px solid #fca5a5;
+    <!-- Shown only when backend is unreachable -->
+    <div id="backendBanner" style="display:none; background:#fee2e2; border:1px solid #fca5a5;
        border-radius:10px; padding:16px 20px; margin-bottom:20px; color:#dc2626;">
-    ⚠️ <strong>Cannot reach the backend.</strong>
-    Make sure you ran <code>python app.py</code> in the <code>backend/</code> folder,
-    then refresh this page.
-    <br><small id="backendError" style="opacity:0.8;"></small>
-  </div>
+      ⚠️ <strong>Cannot reach the backend.</strong>
+      Make sure you ran <code>python app.py</code> in the <code>backend/</code> folder,
+      then refresh this page.
+      <br><small id="backendError" style="opacity:0.8;"></small>
+    </div>
 
-  <section class="jobs-list" id="jobsList">
-    <p style="color:#64748b; padding:20px 0;">Loading jobs…</p>
-  </section>
-</main>
+    <section class="jobs-list" id="jobsList">
+      <p style="color:#64748b; padding:20px 0;">Loading jobs…</p>
+    </section>
+  </main>
 
-<script src="../../js/auth.js"></script>
-<script>
+  <script src="../../js/auth.js"></script>
+  <script>
 
-function esc(s) {
-  return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
-}
-
-async function loadJobs() {
-  const container = document.getElementById("jobsList");
-
-  // Step 1 — check backend is reachable
-  try {
-    const hRes = await fetch(`${API}/api/health`);
-    if (!hRes.ok) throw new Error("Health check returned non-200");
-  } catch(err) {
-    document.getElementById("backendBanner").style.display = "block";
-    document.getElementById("backendError").textContent    =
-      `Error: ${err.message}`;
-    container.innerHTML = "";
-    return;
-  }
-
-  // Step 2 — load jobs
-  try {
-    const res  = await fetch(`${API}/api/jobs`);
-    const data = await res.json();
-
-    if (!res.ok) {
-      container.innerHTML =
-        `<p style="color:#dc2626;">${data.error || "Failed to load jobs."}</p>`;
-      return;
+    function esc(s) {
+      return String(s || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
     }
 
-    if (!data.jobs || data.jobs.length === 0) {
-      container.innerHTML = `
+    async function loadJobs() {
+      const container = document.getElementById("jobsList");
+
+      // Step 1 — check backend is reachable
+      try {
+        const hRes = await fetch(`${API}/api/health`);
+        if (!hRes.ok) throw new Error("Health check returned non-200");
+      } catch (err) {
+        document.getElementById("backendBanner").style.display = "block";
+        document.getElementById("backendError").textContent =
+          `Error: ${err.message}`;
+        container.innerHTML = "";
+        return;
+      }
+
+      // Step 2 — load jobs
+      try {
+        const res = await fetch(`${API}/api/jobs`);
+        const data = await res.json();
+
+        if (!res.ok) {
+          container.innerHTML =
+            `<p style="color:#dc2626;">${data.error || "Failed to load jobs."}</p>`;
+          return;
+        }
+
+        if (!data.jobs || data.jobs.length === 0) {
+          container.innerHTML = `
         <div class="empty-state">
           <p>No jobs posted yet.</p>
           <span>HR will add listings soon — check back later!</span>
         </div>`;
-      return;
-    }
+          return;
+        }
 
-    container.innerHTML = "";
+        container.innerHTML = "";
 
-    data.jobs.forEach(job => {
-      const skillList = (job.skills || "")
-        .split(",").map(s => s.trim()).filter(Boolean);
+        data.jobs.forEach(job => {
+          const skillList = (job.skills || "")
+            .split(",").map(s => s.trim()).filter(Boolean);
 
-      const card = document.createElement("div");
-      card.className = "job-card";
-      card.innerHTML = `
+          const card = document.createElement("div");
+          card.className = "job-card";
+          card.innerHTML = `
         <div class="job-header">
           <h3>${esc(job.title)}</h3>
           <span class="job-type">${esc(job.work_mode || "Onsite")}</span>
@@ -108,20 +111,21 @@ async function loadJobs() {
           </a>
         </div>`;
 
-      container.appendChild(card);
+          container.appendChild(card);
+        });
+
+      } catch (err) {
+        container.innerHTML =
+          `<p style="color:#dc2626;">Failed to load jobs: ${err.message}</p>`;
+      }
+    }
+
+    document.getElementById("logoutBtn")?.addEventListener("click", e => {
+      e.preventDefault(); logout();
     });
 
-  } catch(err) {
-    container.innerHTML =
-      `<p style="color:#dc2626;">Failed to load jobs: ${err.message}</p>`;
-  }
-}
-
-document.getElementById("logoutBtn")?.addEventListener("click", e => {
-  e.preventDefault(); logout();
-});
-
-document.addEventListener("DOMContentLoaded", loadJobs);
-</script>
+    document.addEventListener("DOMContentLoaded", loadJobs);
+  </script>
 </body>
+
 </html>

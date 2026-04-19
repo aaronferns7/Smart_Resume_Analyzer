@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <title>Job Details | TalentCortex</title>
@@ -12,12 +13,14 @@
       border-radius: 16px;
       padding: 30px;
       margin-top: 24px;
-      box-shadow: 0 8px 25px rgba(0,0,0,0.06);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.06);
     }
+
     .detail-card h2 {
       margin-bottom: 6px;
       color: #0b2540;
     }
+
     .meta-row {
       display: flex;
       gap: 20px;
@@ -26,6 +29,7 @@
       color: #475569;
       font-size: 14px;
     }
+
     .meta-chip {
       background: #e2e8f0;
       padding: 5px 12px;
@@ -33,10 +37,12 @@
       font-size: 13px;
       font-weight: 500;
     }
+
     .meta-chip.blue {
       background: #dbeafe;
       color: #1d4ed8;
     }
+
     .section-label {
       font-weight: 700;
       color: #0b2540;
@@ -45,11 +51,13 @@
       border-bottom: 1px solid #e2e8f0;
       padding-bottom: 6px;
     }
+
     .jd-text {
       line-height: 1.8;
       color: #334155;
       white-space: pre-wrap;
     }
+
     .skill-tag {
       display: inline-block;
       background: #3b82f6;
@@ -59,18 +67,21 @@
       font-size: 13px;
       margin: 4px 4px 0 0;
     }
+
     .pref-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
       gap: 14px;
       margin-top: 12px;
     }
+
     .pref-item {
       background: #f8fafc;
       border-radius: 10px;
       padding: 14px;
       text-align: center;
     }
+
     .pref-item .pref-val {
       font-weight: 700;
       font-size: 16px;
@@ -78,10 +89,12 @@
       margin-top: 4px;
       text-transform: capitalize;
     }
+
     .pref-item .pref-key {
       font-size: 12px;
       color: #64748b;
     }
+
     .apply-section {
       background: #0b2540;
       color: white;
@@ -94,8 +107,16 @@
       flex-wrap: wrap;
       gap: 20px;
     }
-    .apply-section h3 { font-size: 20px; }
-    .apply-section p  { opacity: 0.8; margin-top: 5px; }
+
+    .apply-section h3 {
+      font-size: 20px;
+    }
+
+    .apply-section p {
+      opacity: 0.8;
+      margin-top: 5px;
+    }
+
     .apply-now-btn {
       background: #3b82f6;
       color: white;
@@ -108,15 +129,31 @@
       transition: opacity 0.2s;
       white-space: nowrap;
     }
-    .apply-now-btn:hover    { opacity: 0.88; }
-    .apply-now-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .apply-now-btn:hover {
+      opacity: 0.88;
+    }
+
+    .apply-now-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
     .apply-status {
       margin-top: 10px;
       font-size: 14px;
       color: #64748b;
     }
-    .apply-status.success { color: #16a34a; font-weight: 600; }
-    .apply-status.error   { color: #dc2626; }
+
+    .apply-status.success {
+      color: #16a34a;
+      font-weight: 600;
+    }
+
+    .apply-status.error {
+      color: #dc2626;
+    }
+
     #loadingMsg {
       text-align: center;
       padding: 60px 20px;
@@ -125,190 +162,194 @@
     }
   </style>
 </head>
+
 <body class="candidate-page">
 
-<!-- NAVBAR -->
-<nav class="candidate-navbar">
-  <div class="nav-inner">
-    <div class="nav-left"><h2>TalentCortex</h2></div>
-    <div class="nav-right">
-      <a href="jobs.html"        class="logout-btn">Browse Jobs</a>
-      <a href="dashboard.html"   class="logout-btn">Dashboard</a>
-      <a href="../../index.html" class="logout-btn" id="logoutBtn">Logout</a>
-    </div>
-  </div>
-</nav>
-
-<main class="container">
-
-  <a href="jobs.html" class="back-link">← Back to Jobs</a>
-
-  <div id="loadingMsg">Loading job details…</div>
-  <div id="jobContent" style="display:none;">
-
-    <!-- JOB HEADER -->
-    <div class="detail-card">
-      <h2 id="jobTitle">—</h2>
-      <div class="meta-row">
-        <span id="jobCompany"></span>
-        <span>📍 <span id="jobLocation"></span></span>
+  <!-- NAVBAR -->
+  <nav class="candidate-navbar">
+    <div class="nav-inner">
+      <div class="nav-left">
+        <h2>TalentCortex</h2>
       </div>
-      <div>
-        <span class="meta-chip blue" id="jobMode"></span>
-        <span class="meta-chip"      id="jobPosted"></span>
-      </div>
-
-      <div class="section-label">Required Skills</div>
-      <div id="jobSkills"></div>
-
-      <div class="section-label">Job Description</div>
-      <p class="jd-text" id="jobDescription">—</p>
-    </div>
-
-    <!-- HR PREFERENCES (what the company expects) -->
-    <div class="detail-card">
-      <h3>What the Company Expects</h3>
-      <p class="card-subtitle" style="margin-top:5px; color:#64748b;">
-        Preferences set by the HR when posting this job
-      </p>
-      <div class="pref-grid" id="hrPrefsGrid">
-        <!-- populated by JS -->
+      <div class="nav-right">
+        <a href="jobs.html" class="logout-btn">Browse Jobs</a>
+        <a href="dashboard.html" class="logout-btn">Dashboard</a>
+        <a href="../../index.html" class="logout-btn" id="logoutBtn">Logout</a>
       </div>
     </div>
+  </nav>
 
-    <!-- APPLY SECTION -->
-    <div class="apply-section">
-      <div>
-        <h3>Interested in this role?</h3>
-        <p>Your saved preferences and uploaded resume will be shared with HR.</p>
+  <main class="container">
+
+    <a href="jobs.html" class="back-link">← Back to Jobs</a>
+
+    <div id="loadingMsg">Loading job details…</div>
+    <div id="jobContent" style="display:none;">
+
+      <!-- JOB HEADER -->
+      <div class="detail-card">
+        <h2 id="jobTitle">—</h2>
+        <div class="meta-row">
+          <span id="jobCompany"></span>
+          <span>📍 <span id="jobLocation"></span></span>
+        </div>
+        <div>
+          <span class="meta-chip blue" id="jobMode"></span>
+          <span class="meta-chip" id="jobPosted"></span>
+        </div>
+
+        <div class="section-label">Required Skills</div>
+        <div id="jobSkills"></div>
+
+        <div class="section-label">Job Description</div>
+        <p class="jd-text" id="jobDescription">—</p>
       </div>
-      <div style="text-align:right;">
-        <button class="apply-now-btn" id="applyNowBtn">Apply Now</button>
-        <p class="apply-status" id="applyStatus"></p>
+
+      <!-- HR PREFERENCES (what the company expects) -->
+      <div class="detail-card">
+        <h3>What the Company Expects</h3>
+        <p class="card-subtitle" style="margin-top:5px; color:#64748b;">
+          Preferences set by the HR when posting this job
+        </p>
+        <div class="pref-grid" id="hrPrefsGrid">
+          <!-- populated by JS -->
+        </div>
       </div>
+
+      <!-- APPLY SECTION -->
+      <div class="apply-section">
+        <div>
+          <h3>Interested in this role?</h3>
+          <p>Your saved preferences and uploaded resume will be shared with HR.</p>
+        </div>
+        <div style="text-align:right;">
+          <button class="apply-now-btn" id="applyNowBtn">Apply Now</button>
+          <p class="apply-status" id="applyStatus"></p>
+        </div>
+      </div>
+
     </div>
+  </main>
 
-  </div>
-</main>
-
-<script src="../../js/auth.js"></script>
-<script>
-function authHeaders() {
-  return {
-    "Content-Type":  "application/json",
-    "Authorization": `Bearer ${localStorage.getItem("tc_token") || ""}`
-  };
-}
-
-function esc(s) {
-  return String(s || "")
-    .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
-}
-
-// ── Load job details ──────────────────────────────────────────────────────
-async function loadJobDetails() {
-  const params = new URLSearchParams(window.location.search);
-  const jobId  = params.get("job_id");
-  if (!jobId) { document.getElementById("loadingMsg").textContent = "No job selected."; return; }
-
-  try {
-    const res  = await fetch(`${API}/api/jobs/${jobId}`);
-    const data = await res.json();
-    if (!res.ok || !data.job) {
-      document.getElementById("loadingMsg").textContent = "Job not found.";
-      return;
+  <script src="../../js/auth.js"></script>
+  <script>
+    function authHeaders() {
+      return {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${localStorage.getItem("tc_token") || ""}`
+      };
     }
 
-    const job = data.job;
-
-    // Store for apply step
-    const skillArr = (job.skills || "").split(",").map(s => s.trim()).filter(Boolean);
-    localStorage.setItem("selectedJob", JSON.stringify({
-      id: job.id, title: job.title, skills: skillArr
-    }));
-
-    // Populate UI
-    document.getElementById("jobTitle").textContent    = job.title;
-    document.getElementById("jobCompany").textContent  = job.company;
-    document.getElementById("jobLocation").textContent = job.location;
-    document.getElementById("jobMode").textContent     = job.work_mode || "Onsite";
-    document.getElementById("jobPosted").textContent   =
-      "Posted " + new Date(job.created_at).toLocaleDateString();
-    document.getElementById("jobDescription").textContent = job.description || "No description provided.";
-
-    // Skills tags
-    const skillsEl = document.getElementById("jobSkills");
-    if (skillArr.length) {
-      skillsEl.innerHTML = skillArr.map(s => `<span class="skill-tag">${esc(s)}</span>`).join("");
-    } else {
-      skillsEl.innerHTML = "<span style='color:#64748b;'>No specific skills listed</span>";
+    function esc(s) {
+      return String(s || "")
+        .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
     }
 
-    // HR Preferences grid
-    const prefKeys = {
-      work_mode:     { label: "Work Mode",       icon: "🏢" },
-      night_shift:   { label: "Night Shift OK",  icon: "🌙" },
-      relocate:      { label: "Relocation",       icon: "📦" },
-      working_hours: { label: "Working Hours",    icon: "⏰" },
-      work_life_bal: { label: "Work-Life Balance",icon: "⚖️" },
-    };
-    const grid = document.getElementById("hrPrefsGrid");
+    // ── Load job details ──────────────────────────────────────────────────────
+    async function loadJobDetails() {
+      const params = new URLSearchParams(window.location.search);
+      const jobId = params.get("job_id");
+      if (!jobId) { document.getElementById("loadingMsg").textContent = "No job selected."; return; }
 
-    // Try to fetch HR prefs for this job if available
-    const hrPrefRes = await fetch(`${API}/api/jobs/${jobId}/preferences`).catch(() => null);
-    let hrPrefs = {};
-    if (hrPrefRes && hrPrefRes.ok) {
-      const hrPrefData = await hrPrefRes.json();
-      hrPrefs = hrPrefData.preferences || {};
-    }
+      try {
+        const res = await fetch(`${API}/api/jobs/${jobId}`);
+        const data = await res.json();
+        if (!res.ok || !data.job) {
+          document.getElementById("loadingMsg").textContent = "Job not found.";
+          return;
+        }
 
-    // Always show at least work_mode from job record
-    hrPrefs.work_mode = hrPrefs.work_mode || job.work_mode || "Onsite";
+        const job = data.job;
 
-    grid.innerHTML = Object.entries(prefKeys).map(([key, meta]) => {
-      const val = hrPrefs[key] || "Not specified";
-      return `
+        // Store for apply step
+        const skillArr = (job.skills || "").split(",").map(s => s.trim()).filter(Boolean);
+        localStorage.setItem("selectedJob", JSON.stringify({
+          id: job.id, title: job.title, skills: skillArr
+        }));
+
+        // Populate UI
+        document.getElementById("jobTitle").textContent = job.title;
+        document.getElementById("jobCompany").textContent = job.company;
+        document.getElementById("jobLocation").textContent = job.location;
+        document.getElementById("jobMode").textContent = job.work_mode || "Onsite";
+        document.getElementById("jobPosted").textContent =
+          "Posted " + new Date(job.created_at).toLocaleDateString();
+        document.getElementById("jobDescription").textContent = job.description || "No description provided.";
+
+        // Skills tags
+        const skillsEl = document.getElementById("jobSkills");
+        if (skillArr.length) {
+          skillsEl.innerHTML = skillArr.map(s => `<span class="skill-tag">${esc(s)}</span>`).join("");
+        } else {
+          skillsEl.innerHTML = "<span style='color:#64748b;'>No specific skills listed</span>";
+        }
+
+        // HR Preferences grid
+        const prefKeys = {
+          work_mode: { label: "Work Mode", icon: "🏢" },
+          night_shift: { label: "Night Shift OK", icon: "🌙" },
+          relocate: { label: "Relocation", icon: "📦" },
+          working_hours: { label: "Working Hours", icon: "⏰" },
+          work_life_bal: { label: "Work-Life Balance", icon: "⚖️" },
+        };
+        const grid = document.getElementById("hrPrefsGrid");
+
+        // Try to fetch HR prefs for this job if available
+        const hrPrefRes = await fetch(`${API}/api/jobs/${jobId}/preferences`).catch(() => null);
+        let hrPrefs = {};
+        if (hrPrefRes && hrPrefRes.ok) {
+          const hrPrefData = await hrPrefRes.json();
+          hrPrefs = hrPrefData.preferences || {};
+        }
+
+        // Always show at least work_mode from job record
+        hrPrefs.work_mode = hrPrefs.work_mode || job.work_mode || "Onsite";
+
+        grid.innerHTML = Object.entries(prefKeys).map(([key, meta]) => {
+          const val = hrPrefs[key] || "Not specified";
+          return `
         <div class="pref-item">
           <div style="font-size:22px;">${meta.icon}</div>
           <div class="pref-key">${meta.label}</div>
           <div class="pref-val">${esc(val)}</div>
         </div>`;
-    }).join("");
+        }).join("");
 
-    document.getElementById("loadingMsg").style.display  = "none";
-    document.getElementById("jobContent").style.display  = "block";
+        document.getElementById("loadingMsg").style.display = "none";
+        document.getElementById("jobContent").style.display = "block";
 
-  } catch(e) {
-    document.getElementById("loadingMsg").textContent = "Failed to load job details.";
-    console.error(e);
-  }
-}
+      } catch (e) {
+        document.getElementById("loadingMsg").textContent = "Failed to load job details.";
+        console.error(e);
+      }
+    }
 
-// ── Apply button ──────────────────────────────────────────────────────────
-// ── Apply button (Redirects to Dashboard) ─────────────────────────────────
-document.getElementById("applyNowBtn").addEventListener("click", () => {
-  if (!localStorage.getItem("tc_token")) {
-    alert("Please login as a candidate to apply.");
-    window.location.href = "../../pages/auth/candidate-login.html";
-    return;
-  }
+    // ── Apply button ──────────────────────────────────────────────────────────
+    // ── Apply button (Redirects to Dashboard) ─────────────────────────────────
+    document.getElementById("applyNowBtn").addEventListener("click", () => {
+      if (!localStorage.getItem("tc_token")) {
+        alert("Please login as a candidate to apply.");
+        window.location.href = "../../pages/auth/candidate-login.html";
+        return;
+      }
 
-  const btn = document.getElementById("applyNowBtn");
-  const status = document.getElementById("applyStatus");
+      const btn = document.getElementById("applyNowBtn");
+      const status = document.getElementById("applyStatus");
 
-  btn.disabled = true;
-  btn.textContent = "Processing...";
-  
-  // We already saved 'selectedJob' to localStorage in loadJobDetails()
-  status.textContent = "✅ Job selected! Redirecting to dashboard to upload your resume...";
-  status.className = "apply-status success";
-  
-  setTimeout(() => {
-    window.location.href = "dashboard.html";
-  }, 1200);
-});
-// ── Init ──────────────────────────────────────────────────────────────────
-document.addEventListener("DOMContentLoaded", loadJobDetails);
-</script>
+      btn.disabled = true;
+      btn.textContent = "Processing...";
+
+      // We already saved 'selectedJob' to localStorage in loadJobDetails()
+      status.textContent = "✅ Job selected! Redirecting to dashboard to upload your resume...";
+      status.className = "apply-status success";
+
+      setTimeout(() => {
+        window.location.href = "dashboard.html";
+      }, 1200);
+    });
+    // ── Init ──────────────────────────────────────────────────────────────────
+    document.addEventListener("DOMContentLoaded", loadJobDetails);
+  </script>
 </body>
+
 </html>

@@ -1,22 +1,13 @@
 # Smart Resume Analyzer
-
 ## Overview
-
-Smart Resume Analyzer is a web-based application that simulates an Applicant Tracking System (ATS) using Natural Language Processing and Machine Learning techniques.
-
-It evaluates resumes against job descriptions, calculates ATS-style matching scores, identifies missing skills, and provides actionable suggestions to improve resume quality.
-
-The system helps job seekers understand how automated recruitment systems screen resumes and optimize their profiles for better selection chances.
-
----
-
+TalentCortex is an automated intelligence system designed to bridge the gap between unstructured candidate data and recruitment requirements. The system utilizes advanced Natural Language Processing (NLP) and Large Language Models (LLMs) to perform context-aware resume parsing, scoring, and skill-gap identification.
 ## Features
 
 * Resume Parsing
   Extracts key information such as skills, education, and experience from uploaded resumes.
 
 * Job Description Matching
-  Compares resumes with job descriptions using intelligent text analysis.
+  Compares resumes with job descriptions using intelligent text analysis and vectors.
 
 * ATS-Based Scoring
   Generates a score similar to real-world Applicant Tracking Systems.
@@ -32,8 +23,6 @@ The system helps job seekers understand how automated recruitment systems screen
 
 * User-Friendly Interface
   Simple interface for uploading resumes and viewing results.
-
----
 
 ## ATS-Based Analysis
 
@@ -56,33 +45,34 @@ This project incorporates core functionalities inspired by modern Applicant Trac
 
 ---
 
-## Tech Stack
-
 ### Frontend
 
-* HTML
-* CSS
-* JavaScript
+* HTML - Structures the basic layout and content of the user dashboard.
+* CSS - Styles the visual presentation and layout of the web pages.
+* JavaScript - Handles user interactivity and asynchronous communication with the backend.
 
 ### Backend
 
-* Python
-* Flask
+* Python - Serves as the core programming language handling all server-side logic and AI integration.
+* Flask - Acts as the lightweight web framework connecting the frontend interface to the backend processes.
 
 ### Databases
 
-* SQL (SQLite) for structured data storage such as user data and results
-* ChromaDB for vector storage and semantic search of resume and job description embeddings
+* SQLite - Stores structured, standard application data like user details and historical results.
+* ChromaDB - Acts as a vector database to store and quickly search the mathematical embeddings of resumes and job descriptions.
+
+### AI & Document Processing
+
+* Google Gemini API - Powers the semantic extraction and intent-based evaluation of the resumes.
+* LlamaParse - Accurately extracts text and structural data (like tables) from complex PDF or DOCX files.
+* LangChain - Orchestrates the data flow and prompt management between the application and the Gemini LLM.
 
 ### Libraries and Tools
 
-* Natural Language Processing (NLP)
-* Scikit-learn
-* Cosine Similarity
-* Sentence Transformers (for embeddings)
-* ChromaDB (vector database)
-
----
+* python-dotenv - Securely loads and manages sensitive environment variables like your API keys.
+* Sentence Transformers - Converts raw text into vector embeddings so the system can understand semantic meaning.
+* Scikit-learn - Provides fundamental machine learning algorithms for tasks like calculating cosine similarity.
+* Pandas - Processes and structures the extracted data for easier manipulation and analysis.
 
 ## Project Structure
 
@@ -102,112 +92,41 @@ Smart_Resume_Analyzer/
 │   └── index.html
 │
 └── README.md
-```
 
 ---
 
 ## How It Works
 
-1. User uploads a resume.
-2. Resume is parsed to extract text and relevant information.
-3. User provides a job description.
-4. Text data is processed using NLP techniques.
-5. ATS-style matching is performed using cosine similarity, keyword matching, and semantic similarity via embeddings.
-6. ChromaDB is used to store and compare vector representations for deeper contextual matching.
-7. Results including score, skill gaps, and suggestions are displayed.
-
+1. User uploads a resume (PDF/DOCX) and provides a target job description.
+2. The resume is processed through LlamaParse to accurately extract text while preserving complex structures like tables and multi-column layouts.
+3. LangChain orchestrates the data flow, passing the parsed document to the Gemini API for deep semantic extraction of skills, education, and project impact.
+4. The system evaluates the candidate's profile against the job description using semantic embeddings rather than simple keyword matching.
+5. A diagnostic logic layer analyzes the results to calculate an ATS-style compatibility score and identify specific missing competencies.
+6. The Flask backend processes this data and sends it to the frontend.
+7. Results, including the final score, skill gap analysis, and actionable suggestions, are displayed on the user dashboard.
 ---
-
-## Installation and Setup
 
 ### Prerequisites
 
 * Python 3.x
 * pip
 
-### Steps
-
-1. Clone the repository
-
-```
-git clone https://github.com/your-username/Smart_Resume_Analyzer.git
-cd Smart_Resume_Analyzer
-```
-
-2. Install dependencies
-
-```
-cd backend
-pip install -r requirements.txt
-```
-
-3. Run the backend server
-
-```
-python app.py
-```
-
-4. Open frontend
-
-* Navigate to the frontend folder
-* Open `index.html` in your browser
-
----
-
-## Usage
-
-* Upload your resume
-* Enter or upload a job description
-* View:
-
-  * ATS score
-  * Skill match and gaps
-  * Suggested improvements
-
----
-
 ## Key Concepts Used
 
-* Applicant Tracking Systems (ATS)
-* Natural Language Processing
-* Cosine Similarity for text matching
-* Keyword extraction and matching
-* Semantic search using embeddings
-* Vector databases (ChromaDB)
-* Machine Learning-based prediction
-
----
-
-## Future Enhancements
-
-* User authentication system
-* Dashboard with analytics
-* Resume scoring history
-* Integration with job portals
-* Advanced ML models for better predictions
-* Automated email feedback system
+1. Applicant Tracking Systems (ATS)
+2. Natural Language Processing
+3. Cosine Similarity for text matching
+4. Keyword extraction and matching
+5. Semantic search using embeddings
+6. Vector databases (ChromaDB)
+7. Machine Learning-based prediction
 
 ---
 
 ## Limitations
-
-* Accuracy depends on resume format and text quality
-* Basic NLP techniques may miss deeper context in some cases
-* Limited dataset for job role prediction
-* ATS scoring is simulated and may differ from real-world systems
-
----
-
-## Contributing
-
-Contributions are welcome. You can improve the project by adding features, fixing bugs, or optimizing performance.
-
-Steps:
-
-1. Fork the repository
-2. Create a new branch
-3. Make changes
-4. Submit a pull request
+1. Accuracy depends on resume format and text quality
+2. Basic NLP techniques may miss deeper context in some cases
+3. ATS scoring is simulated and may differ from real-world systems
 
 ---
 
@@ -221,10 +140,11 @@ This project is for educational purposes. You are free to modify and use it.
 
 ## Authors
 
-* Aaron Fernandes
 * Atharva Jadhav 
-* Vishal Jankar
+* Aaron Fernandes
 * Nathan D'cunha
+* Vishal Jankar
+
 
 This project was developed collaboratively as part of an academic mini project.
 
