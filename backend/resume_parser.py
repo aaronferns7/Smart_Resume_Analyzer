@@ -23,7 +23,7 @@ from dotenv import load_dotenv
 # ─────────────────────────────────────────────
 # 1. API KEYS
 # ─────────────────────────────────────────────
-#os.environ["LLAMA_CLOUD_API_KEY"] = os.environ.get("LLAMA_CLOUD_API_KEY", "llx-chr5semQc7nlwwhXmkKIDweolln8CAV0WrdKazY92SHRKG0S")
+
 load_dotenv()
 
 # Normalise key names — support both GEMINI_API_KEY and GOOGLE_API_KEY.
