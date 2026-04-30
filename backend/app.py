@@ -72,6 +72,26 @@ except ImportError as e:
     logger.error(f"❌ matcher: {e}")
     match_job = None
 
+try:
+    from skill_matcher import contextually_match_skills
+    logger.info("✅ skill_matcher loaded")
+except ImportError as e:
+    logger.error(f"❌ skill_matcher: {e}")
+    contextually_match_skills = None
+try:
+    from resume_parser import process_resume
+    logger.info("✅ resume_parser loaded")
+except ImportError as e:
+    logger.error(f"❌ resume_parser: {e}")
+    process_resume = None
+
+try:
+    from matcher import match_job
+    logger.info("✅ matcher loaded")
+except ImportError as e:
+    logger.error(f"❌ matcher: {e}")
+    match_job = None
+
 # ─────────────────────────────────────────────
 # AUTH HELPERS
 # ─────────────────────────────────────────────
@@ -338,9 +358,13 @@ def upload_resume():
         result = process_resume(save_path, user_id=str(request.user["user_id"]))
     except Exception as e:
         logger.error(f"process_resume error: {e}")
+        if os.path.exists(save_path):
+            os.remove(save_path)
         return jsonify({"error": f"Parsing failed: {str(e)}"}), 500
 
     if "error" in result:
+        if os.path.exists(save_path):
+            os.remove(save_path)
         return jsonify(result), 422
 
     # ── Save application record to SQL if job_id provided ──────────────────
@@ -350,22 +374,30 @@ def upload_resume():
             parsed = result.get("parsed_content", {})
             meta   = result.get("contact_info",   {})
             
-            # This handles BOTH new applications and updating existing ones cleanly!
-            # Create a web-friendly URL path for the database
-            # Force the frontend to look at port 5000
+            job = conn.execute("SELECT skills FROM jobs WHERE id = ?", (job_id,)).fetchone()
+            matched_skills_json = "[]"
+            missing_skills_json = "[]"
+            
+            if job and contextually_match_skills is not None:
+                sm = contextually_match_skills(parsed.get("skills", []), job["skills"])
+                matched_skills_json = json.dumps(sm["matched"])
+                missing_skills_json = json.dumps(sm["missing"])
+            
             db_resume_path = f"http://localhost:5000/uploads/{filename}"
 
             conn.execute(
                 """INSERT INTO applications
-                       (candidate_id, job_id, resume_path, skills, experience, phone, linkedin, github)
-                   VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                       (candidate_id, job_id, resume_path, skills, experience, phone, linkedin, github, matched_skills, missing_skills)
+                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                    ON CONFLICT(candidate_id, job_id) DO UPDATE SET
-                       resume_path = excluded.resume_path,
-                       skills      = excluded.skills,
-                       experience  = excluded.experience,
-                       phone       = excluded.phone,
-                       linkedin    = excluded.linkedin,
-                       github      = excluded.github""",
+                       resume_path    = excluded.resume_path,
+                       skills         = excluded.skills,
+                       experience     = excluded.experience,
+                       phone          = excluded.phone,
+                       linkedin       = excluded.linkedin,
+                       github         = excluded.github,
+                       matched_skills = excluded.matched_skills,
+                       missing_skills = excluded.missing_skills""",
                 (
                     request.user["user_id"], job_id, db_resume_path, # <--- FIXED HERE
                     json.dumps(parsed.get("skills",     [])),
@@ -373,6 +405,8 @@ def upload_resume():
                     meta.get("phone",    ""),
                     meta.get("linkedin", ""),
                     meta.get("github",   ""),
+                    matched_skills_json,
+                    missing_skills_json,
                 )
             )
             conn.commit()
@@ -497,6 +531,8 @@ def analyze_resume():
             logger.warning(f"Failed to re-parse resume for analysis: {e}")
 
     score = 0
+    matched_skills = []
+    missing_skills = []
     if jd_text:
         match_result = match_job(jd_text, candidate_ids=[str(user_id)])
         if match_result.get("error"):
@@ -504,8 +540,25 @@ def analyze_resume():
         else:
             matches = match_result.get("matches", [])
             score = matches[0].get("score", 0) if matches else 0
+            
+        # Perform contextual skill matching
+        if contextually_match_skills and parsed_result and "parsed_content" in parsed_result:
+            cand_skills = parsed_result["parsed_content"].get("skills", [])
+            job_req_skills = job_dict.get("skills", "")
+            if job_req_skills and cand_skills:
+                try:
+                    sm = contextually_match_skills(cand_skills, job_req_skills)
+                    matched_skills = sm["matched"]
+                    missing_skills = sm["missing"]
+                except Exception as e:
+                    logger.warning(f"Skill matching failed during analyze: {e}")
 
-    response = {"status": "success", "score": score}
+    response = {
+        "status": "success", 
+        "score": score,
+        "matched_skills": matched_skills,
+        "missing_skills": missing_skills
+    }
     if parsed_result and "parsed_content" in parsed_result:
         response["parsed_content"] = parsed_result.get("parsed_content")
         response["contact_info"]  = parsed_result.get("contact_info")
@@ -581,6 +634,7 @@ def get_applicants(job_id):
             """SELECT a.candidate_id, u.name, u.email,
                       a.resume_path, a.skills, a.experience,
                       a.phone, a.linkedin, a.github,
+                      a.matched_skills, a.missing_skills,
                       p.work_mode, p.night_shift, p.relocate,
                       p.working_hours, p.work_life_bal
                FROM applications a
@@ -621,6 +675,8 @@ def get_applicants(job_id):
                 "github":       info.get("github",    ""),
                 "skills":       json.loads(info.get("skills",     "[]") or "[]"),
                 "experience":   json.loads(info.get("experience", "[]") or "[]"),
+                "matched_skills": json.loads(info.get("matched_skills", "[]") or "[]"),
+                "missing_skills": json.loads(info.get("missing_skills", "[]") or "[]"),
                 "preferences": {
                     "work_mode":     info.get("work_mode",     "N/A"),
                     "night_shift":   info.get("night_shift",   "N/A"),

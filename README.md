@@ -92,7 +92,7 @@ Smart_Resume_Analyzer/
 │   └── index.html
 │
 └── README.md
-
+```
 ---
 
 ## How It Works

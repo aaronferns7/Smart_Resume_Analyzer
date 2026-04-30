@@ -21,6 +21,7 @@ numpy
 pandas
 # --- Document Parsing ---
 pypdf
+pdfplumber
 python-docx
 
 #NLP 

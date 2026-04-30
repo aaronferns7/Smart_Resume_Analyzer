@@ -169,18 +169,8 @@ async function loadApplicants() {
 
       const topSkills = (candidate.skills || []).slice(0, 4).join(", ") || "N/A";
 
-      const resumeSkills = (candidate.skills || []).map(s => s.trim().toLowerCase());
-      const jobSkills = Array.isArray(data.job?.skills)
-        ? data.job.skills.map(s => s.trim().toLowerCase())
-        : (data.job?.skills || "").split(",").map(s => s.trim().toLowerCase()).filter(Boolean);
-
-      const matched = [];
-      const missing = [];
-      jobSkills.forEach(js => {
-        const isMatch = resumeSkills.some(rs => rs.includes(js) || js.includes(rs));
-        if (isMatch) matched.push(js);
-        else missing.push(js);
-      });
+      const matched = candidate.matched_skills || [];
+      const missing = candidate.missing_skills || [];
 
       const div = document.createElement("div");
       div.className = "applicant-card";

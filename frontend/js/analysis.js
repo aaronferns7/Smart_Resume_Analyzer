@@ -56,17 +56,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // ── Match Score (computed from job vs resume skills) ──────────────────────
   if (job) {
-    const resumeSkills = (parsed.skills || []).map(s => s.toLowerCase());
-    const rawJobSkills = job.skills || [];
-    const jobSkills = Array.isArray(rawJobSkills)
-      ? rawJobSkills.map(s => s.toLowerCase())
-      : rawJobSkills.split(",").map(s => s.trim().toLowerCase());
-
-    const matched = jobSkills.filter(s => resumeSkills.includes(s));
-    const missing = jobSkills.filter(s => !resumeSkills.includes(s));
-    const score = jobSkills.length
-      ? Math.round((matched.length / jobSkills.length) * 100)
-      : 0;
+    const matched = data.matched_skills || [];
+    const missing = data.missing_skills || [];
+    const score = data.score || 0;
 
     // Score circle
     const circle = document.querySelector(".circle");

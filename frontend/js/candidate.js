@@ -174,6 +174,9 @@ async function uploadResumeFile() {
     formData.append("job_id", job.id);
   }
 
+  // Clear stale data to prevent old names/scores from sticking around
+  localStorage.removeItem("resumeAnalysis");
+
   setStatus("uploadStatus",
     "⏳ Uploading and parsing your resume… this may take 15-30 seconds.");
 

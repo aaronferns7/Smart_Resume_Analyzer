@@ -183,12 +183,53 @@
           container.appendChild(div);
         });
 
+        loadStats(jobs);
+
       } catch (err) {
         container.innerHTML = `
       <p style="color:#dc2626;">
         Could not load jobs. Is the backend running on port 5000?<br>
         <small>${err.message}</small>
       </p>`;
+      }
+    }
+
+    // ── Load stats (Applicants & Avg Score) ──────────────────────────────────
+    async function loadStats(jobs) {
+      if (!jobs || jobs.length === 0) {
+        document.getElementById("totalApplicants").textContent = "0";
+        document.getElementById("avgScore").textContent = "—";
+        return;
+      }
+
+      document.getElementById("totalApplicants").textContent = "...";
+      document.getElementById("avgScore").textContent = "...";
+
+      let totalCount = 0;
+      let totalScore = 0;
+
+      for (const job of jobs) {
+        try {
+          const res = await fetch(`${API}/api/applicants/${job.id}`, { headers: authHeaders() });
+          if (res.ok) {
+            const data = await res.json();
+            if (data.matches && data.matches.length > 0) {
+              totalCount += data.matches.length;
+              data.matches.forEach(m => {
+                totalScore += (m.score || 0);
+              });
+            }
+          }
+        } catch (err) {
+          console.error("Stats error for job", job.id, err);
+        }
+      }
+
+      document.getElementById("totalApplicants").textContent = totalCount;
+      if (totalCount > 0) {
+        document.getElementById("avgScore").textContent = Math.round(totalScore / totalCount) + "%";
+      } else {
+        document.getElementById("avgScore").textContent = "—";
       }
     }
 
@@ -251,9 +292,6 @@
     // ── Init ─────────────────────────────────────────────────────────────────
     document.addEventListener("DOMContentLoaded", async () => {
       await loadMyJobs();
-      // Placeholder stats — extend later
-      document.getElementById("totalApplicants").textContent = "—";
-      document.getElementById("avgScore").textContent = "—";
     });
   </script>
 </body>

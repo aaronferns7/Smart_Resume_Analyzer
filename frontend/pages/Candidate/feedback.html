@@ -339,9 +339,9 @@
       </div>`;
       };
 
-      return makeSection("icon-skills", "🛠️", "Skills Analysis", sections.skills)
-        + makeSection("icon-experience", "💼", "Experience &amp; Background", sections.experience)
-        + makeSection("icon-general", "🌐", "Market Outlook &amp; Recommendations", sections.general);
+      return makeSection("icon-skills", "", "Skills Analysis", sections.skills)
+        + makeSection("icon-experience", "", "Experience &amp; Background", sections.experience)
+        + makeSection("icon-general", "", "Market Outlook &amp; Recommendations", sections.general);
     }
 
     function renderStats() {
@@ -412,7 +412,7 @@
       if (!analysis || !analysis.parsed_content) {
         contentEl.innerHTML = `
       <div class="feedback-error">
-        <p>⚠️ No resume analysis found.</p>
+        <p> No resume analysis found.</p>
         <p>Please go back to the dashboard, upload your resume, and click "Analyze Resume".</p>
         <a href="dashboard.html" class="back-btn" style="margin-top:16px;display:inline-flex;">← Back to Dashboard</a>
       </div>`;
@@ -445,7 +445,7 @@
 
         // Add regenerate button below the feedback
         const regenBtn = document.createElement("button");
-        regenBtn.textContent = "🔄 Regenerate Feedback";
+        regenBtn.textContent = " Regenerate Feedback";
         regenBtn.className = "back-btn";
         regenBtn.style.cssText = "margin-top:20px; background:#0b2540; color:#fff; display:block; width:100%; text-align:center; padding:12px;";
         regenBtn.addEventListener("click", () => {
@@ -458,7 +458,7 @@
       } catch (err) {
         contentEl.innerHTML = `
       <div class="feedback-error">
-        <p>❌ ${esc(err.message || "Could not generate feedback.")}</p>
+        <p> ${esc(err.message || "Could not generate feedback.")}</p>
         <p>Please try going back and analyzing again.</p>
         <a href="dashboard.html" class="back-btn" style="margin-top:16px;display:inline-flex;">← Back to Dashboard</a>
       </div>`;

@@ -36,7 +36,7 @@ def _vectorize_text(text: str):
         )
         return result["embedding"]
     except Exception as e:
-        print(f"❌ Embedding error: {e}")
+        print(f"Embedding error: {e}")
         import traceback; traceback.print_exc()
         return None
 
@@ -132,5 +132,5 @@ def match_job(jd_text: str, candidate_ids: list = None) -> dict:
     # Sort best match first
     matches.sort(key=lambda x: x["score"], reverse=True)
 
-    print(f"✅ Matching complete — {len(matches)} candidates ranked")
+    print(f"Matching complete - {len(matches)} candidates ranked")
     return {"status": "success", "matches": matches}

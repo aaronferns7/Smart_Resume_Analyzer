@@ -71,6 +71,8 @@ def init_db():
             phone           TEXT    DEFAULT '',
             linkedin        TEXT    DEFAULT '',
             github          TEXT    DEFAULT '',
+            matched_skills  TEXT    DEFAULT '[]',
+            missing_skills  TEXT    DEFAULT '[]',
             applied_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             UNIQUE(candidate_id, job_id),
             FOREIGN KEY (candidate_id) REFERENCES users(id),
@@ -93,6 +95,17 @@ def init_db():
             FOREIGN KEY (candidate_id) REFERENCES users(id)
         )
     """)
+
+    # ── Safe Database Migrations ─────────────────────────────────────────────
+    # Add new columns to existing DBs without deleting data
+    try:
+        c.execute("ALTER TABLE applications ADD COLUMN matched_skills TEXT DEFAULT '[]'")
+    except sqlite3.OperationalError:
+        pass # Column already exists
+    try:
+        c.execute("ALTER TABLE applications ADD COLUMN missing_skills TEXT DEFAULT '[]'")
+    except sqlite3.OperationalError:
+        pass # Column already exists
 
     conn.commit()
     conn.close()

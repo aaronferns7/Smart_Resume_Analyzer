@@ -255,15 +255,18 @@
       const jobSkills = (job.skills || "").split(",").map(s => s.trim().toLowerCase()).filter(Boolean);
       const candidateSkillsLower = skills.map(s => s.toLowerCase());
 
-      const matched = [];
-      const missing = [];
-      jobSkills.forEach(js => {
-        const isMatch = candidateSkillsLower.some(rs => rs.includes(js) || js.includes(rs));
-        if (isMatch) matched.push(js);
-        else missing.push(js);
-      });
+      const matched = candidate.matched_skills || [];
+      const missing = candidate.missing_skills || [];
 
-      const extra = skills.filter(s => !matched.includes(s.toLowerCase())).slice(0, 5);
+      const matchedLower = matched.map(s => s.toLowerCase());
+      const missingLower = missing.map(s => s.toLowerCase());
+
+      const extra = skills.filter(s => {
+        const lowerS = s.toLowerCase();
+        const inMatched = matchedLower.some(m => m.includes(lowerS) || lowerS.includes(m));
+        const inMissing = missingLower.some(m => m.includes(lowerS) || lowerS.includes(m));
+        return !inMatched && !inMissing;
+      }).slice(0, 5);
 
       const experience = candidate.experience || [];
       const prefs = candidate.preferences || {};
@@ -310,7 +313,7 @@
  
         <!-- Skills Matched -->
         <div class="info-block">
-          <h4>Skills Matched (${matched.length}/${jobSkills.length})</h4>
+          <h4>Skills Matched (${matched.length}/${(matched.length + missing.length) || jobSkills.length})</h4>
           ${matched.length
           ? matched.map(s => `<span class="skill-chip chip-green">${esc(s)}</span>`).join("")
           : "<span style='color:#94a3b8;font-size:13px;'>None matched</span>"}
